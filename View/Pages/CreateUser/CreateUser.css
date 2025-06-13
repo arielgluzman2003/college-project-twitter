@@ -1,0 +1,9 @@
+body{
+    min-height: 100vh;
+    margin: 0;
+}
+
+.page-container {
+    min-height: 100vh; 
+    background-color: rgb(38,44,52);
+}
