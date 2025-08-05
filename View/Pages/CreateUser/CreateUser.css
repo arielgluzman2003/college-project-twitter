@@ -7,3 +7,73 @@ body{
     min-height: 100vh; 
     background-color: rgb(38,44,52);
 }
+
+.signup-card{
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    height: 66.66vh;
+    background-color: black;
+}
+
+.card-title{
+    color: white;
+    font-size: 1.5rem;
+    text-align: left;
+    margin-top: 1rem;
+}
+
+.form-control {
+    margin-top: 20px;
+    background-color: #000 !important;
+    color: #fff !important;
+    border-color: #444;
+}
+
+.form-control::placeholder {
+    color: #8a8a8a !important;
+    opacity: 1;
+}
+
+.form-select{
+    margin-top: 20px;
+    background-color: #000 !important;
+    color: #fff !important;
+    border-color: #444;
+}
+
+.form-select::placeholder {
+    color: #8a8a8a !important;
+    opacity: 1;
+}
+
+.form-floating label{
+  color: white !important;
+  opacity: 0.5 !important;
+}
+
+.form-floating label::after {
+  content: none !important;  
+}
+
+.date-of-birth{
+    margin-top: 25px;
+    font-weight: bold;
+    color: white;
+    font-size: 12px;
+}
+
+.date-of-birth-explain{
+    color: white;
+    opacity: 0.5;
+    font-size: 12px;
+}
+
+.next-button-disabled{
+    margin-top: 120px;
+    background-color: #727272 !important;
+    color: black !important;
+    font-weight: bold;
+    border-color: #444 !important;
+    border-radius: 1.5rem !important;
+    height: 45px;
+}
