@@ -1,0 +1,41 @@
+body {
+    background-color: #000;
+}
+.login-card {
+    max-width: 400px;
+    border-radius: 16px;
+    background: #16181c;
+    color: #fff;
+    border: 1px solid #333;
+}
+.logo-img {
+    width: 48px;
+    height: 48px;
+}
+.form-control {
+    background: #212327;
+    color: #fff;
+    border: 1px solid #333;
+}
+.form-control:focus {
+    background: #212327;
+    color: #fff;
+    border-color: #1da1f2;
+    box-shadow: none;
+}
+.btn-primary {
+    background-color: #fff;
+    color: #0f1419;
+    border: none;
+    font-weight: bold;
+}
+.btn-primary:hover {
+    background-color: #e6e6e6;
+    color: #0f1419;
+}
+a {
+    color: #1da1f2;
+}
+hr {
+    border-top: 1px solid #333;
+}
