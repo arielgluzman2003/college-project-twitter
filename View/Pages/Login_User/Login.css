@@ -39,3 +39,49 @@ a {
 hr {
     border-top: 1px solid #333;
 }
+.google-btn img,
+.apple-btn i {
+    margin-left: 8px;
+}
+.btn-light {
+    background: #fff;
+    color: #000;
+    border: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+}
+.btn-light:hover {
+    background: #e6e6e6;
+}
+.btn-outline-light {
+    border: 2px solid #fff;
+    color: #fff;
+    background: transparent;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+}
+.btn-outline-light:hover {
+    background: #222;
+    color: #fff;
+}
+.big-x-logo {
+    max-width: 60%;
+    max-height: 60vh;
+    opacity: 0.9;
+}
+.display-1 {
+    font-size: 4rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+}
+@media (max-width: 991px) {
+    .big-x-logo {
+        display: none;
+    }
+    .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
