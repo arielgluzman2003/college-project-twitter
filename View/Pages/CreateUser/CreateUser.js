@@ -39,18 +39,46 @@ addDays = (container) => {
     addSelectOptions(container, daysArray);
 }
 
-window.onload = () => {
+// window.onload = () => {
+//     const yearSelect = document.getElementById('user-birthyear-select');
+//     const monthSelect = document.getElementById('user-birthmonth-select');
+//     const daySelect = document.getElementById('user-birthday-select');
+
+//     // Add years from 1900 to the current year
+//     const currentYear = new Date().getFullYear();
+//     addYears(yearSelect, 1900, currentYear);
+
+//     // Add months
+//     addMonths(monthSelect);
+
+//     // Add days
+//     addDays(daySelect);
+// }
+
+function setupCreateUserFields() {
     const yearSelect = document.getElementById('user-birthyear-select');
     const monthSelect = document.getElementById('user-birthmonth-select');
     const daySelect = document.getElementById('user-birthday-select');
 
-    // Add years from 1900 to the current year
-    const currentYear = new Date().getFullYear();
-    addYears(yearSelect, 1900, currentYear);
+    if (yearSelect && monthSelect && daySelect) {
+        // Add years from 1900 to the current year
+        const currentYear = new Date().getFullYear();
+        yearSelect.innerHTML = '<option value="" selected disabled hidden></option>';
+        addYears(yearSelect, 1900, currentYear);
 
-    // Add months
-    addMonths(monthSelect);
+        // Add months
+        monthSelect.innerHTML = '<option value="" selected disabled hidden></option>';
+        addMonths(monthSelect);
 
-    // Add days
-    addDays(daySelect);
+        // Add days
+        daySelect.innerHTML = '<option value="" selected disabled hidden></option>';
+        addDays(daySelect);
+    }
 }
+
+// Listen for modal show event
+document.addEventListener('shown.bs.modal', function(event) {
+    if (event.target.id === 'createUserModal') {
+        setupCreateUserFields();
+    }
+});

@@ -25,17 +25,15 @@
                         הרשמה באמצעות Apple
                     </button>
                     <div class="text-center text-white mb-3">או</div>
-                    <a href="../CreateUser/CreateUser.html" class="btn btn-light rounded-pill w-100 mb-3 fw-bold">צור חשבון</a>
-                    <p class="text-muted small mt-2">
-                        בעצם ההצטרפות, אתה מסכים <a href="#" class="text-info">לתנאי השירות ולמדיניות הפרטיות</a>, כולל <a href="#" class="text-info">שימוש בקובצי Cookie</a>.
-                    </p>
+                    <button id="openCreateUserModal" class="btn btn-light rounded-pill w-100 mb-3 fw-bold">צור חשבון</button>\
+                    <div dir="ltr" class="css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-1k78y06 r-1gkfh8e r-56xrmm r-16dba41 r-13awgt0 r-117bsoe r-17w48nw" style="color: rgb(113, 118, 123); width: 300px;">בעצם ההצטרפות, אתה מסכים ל<a href="https://x.com/tos" rel="noopener noreferrer nofollow" target="_blank" role="link" class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-1k78y06 r-1loqt21" style="color: rgb(29, 155, 240);"><span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-1k78y06">תנאי השירות</span></a> ול<a href="https://x.com/privacy" rel="noopener noreferrer nofollow" target="_blank" role="link" class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-1k78y06 r-1loqt21" style="color: rgb(29, 155, 240);"><span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-1k78y06">מדיניות הפרטיות</span></a>, כולל <a href="https://help.x.com/rules-and-policies/twitter-cookies" rel="noopener noreferrer nofollow" target="_blank" role="link" class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-1k78y06 r-1loqt21" style="color: rgb(29, 155, 240);"><span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-1k78y06">שימוש בקובצי Cookie</span></a>.</div>
                 </div>
                 <div class="mt-5 w-100" style="max-width: 400px;">
                     <h3 class="fw-bold text-white mb-3 fs-5">כבר יש לך חשבון?</h3>
                     <form id="loginForm">
                         <button type="submit" class="btn btn-outline-light rounded-pill w-100 mb-2 fw-bold">כניסה</button>
                     </form>
-                </div>
+                </div>  
             </div>
             <!-- Right Side: Big X Logo -->
             <div class="col-lg-6 d-flex justify-content-center align-items-center">
@@ -43,8 +41,12 @@
             </div>
         </div>
     </div>
+
+    <div id="createUserModalContainer"></div>
+
     <script src="Login.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../CreateUser/CreateUser.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </body>
 </html>

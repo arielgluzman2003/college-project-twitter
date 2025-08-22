@@ -15,6 +15,39 @@ body{
     background-color: black;
 }
 
+/* Modal card */
+.signup-card,
+.modal-content {
+    background: #000 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 0 32px 0 rgba(0,0,0,0.8) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+/* Modal header */
+.modal-header {
+    border-bottom: none !important;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 32px;
+}
+.modal-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 16px;
+}
+.modal-header .btn-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    filter: invert(1);
+}
+
 .card-title{
     color: white;
     font-size: 1.5rem;
@@ -40,6 +73,41 @@ body{
     color: #fff !important;
     border-color: #444;
 }
+
+/* Align and size select fields */
+.form-select {
+    text-align: center;
+    vertical-align: middle;
+    height: 56px !important;
+    font-size: 1.2rem;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    min-width: 100px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Make sure labels are visible and not overlapping */
+.form-floating > label {
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    font-size: 1rem;
+    color: #fff;
+    opacity: 0.7;
+}
+
+/* Center text in select fields
+.form-select {
+    text-align: center;
+    vertical-align: bottom;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    height: 48px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
 
 .form-select::placeholder {
     color: #8a8a8a !important;
@@ -76,4 +144,67 @@ body{
     border-color: #444 !important;
     border-radius: 1.5rem !important;
     height: 45px;
+}
+
+/* Inputs */
+.form-control, .form-select {
+    background: #16181c !important;
+    color: #fff !important;
+    border: 1.5px solid #333 !important;
+    border-radius: 12px !important;
+    font-size: 1.1rem;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #1da1f2 !important;
+    box-shadow: none !important;
+}
+
+/* Labels */
+label, h6, .small, .form-floating > label {
+    color: #fff !important;
+    font-weight: 400;
+}
+
+/* Button */
+.btn-primary, .btn-primary:focus {
+    background: #e7e9ea !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 999px !important;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 0.75rem 0;
+    margin-top: 24px;
+}
+.btn-primary:hover {
+    background: #d3d3d3 !important;
+    color: #000 !important;
+}
+
+/* Modal backdrop (darken background more) */
+.modal-backdrop.show {
+    opacity: 0.85 !important;
+    background: #222 !important;
+}
+
+/* Make sure modal is centered and max width */
+.modal-dialog {
+    max-width: 480px;
+    margin: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .modal-dialog {
+        max-width: 98vw;
+    }
+    .modal-content {
+        border-radius: 0 !important;
+    }
+    /* Responsive: stack fields on small screens */
+    .row.mb-4.g-3 > .col-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
 }
