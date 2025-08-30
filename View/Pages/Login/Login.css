@@ -1,0 +1,87 @@
+body {
+    background-color: #000;
+}
+.login-card {
+    max-width: 400px;
+    border-radius: 16px;
+    background: #16181c;
+    color: #fff;
+    border: 1px solid #333;
+}
+.logo-img {
+    width: 48px;
+    height: 48px;
+}
+.form-control {
+    background: #212327;
+    color: #fff;
+    border: 1px solid #333;
+}
+.form-control:focus {
+    background: #212327;
+    color: #fff;
+    border-color: #1da1f2;
+    box-shadow: none;
+}
+.btn-primary {
+    background-color: #fff;
+    color: #0f1419;
+    border: none;
+    font-weight: bold;
+}
+.btn-primary:hover {
+    background-color: #e6e6e6;
+    color: #0f1419;
+}
+a {
+    color: #1da1f2;
+}
+hr {
+    border-top: 1px solid #333;
+}
+.google-btn img,
+.apple-btn i {
+    margin-left: 8px;
+}
+.btn-light {
+    background: #fff;
+    color: #000;
+    border: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+}
+.btn-light:hover {
+    background: #e6e6e6;
+}
+.btn-outline-light {
+    border: 2px solid #fff;
+    color: #fff;
+    background: transparent;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+}
+.btn-outline-light:hover {
+    background: #222;
+    color: #fff;
+}
+.big-x-logo {
+    max-width: 60%;
+    max-height: 60vh;
+    opacity: 0.9;
+}
+.display-1 {
+    font-size: 4rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+}
+@media (max-width: 991px) {
+    .big-x-logo {
+        display: none;
+    }
+    .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,66 @@
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content signup-card p-0">
+      <div class="card w-100 signup-card m-0 border-0" style="background: transparent;">
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col-2">
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="col-10">
+              <img src="../../assets/X_logo.jpg" alt="X Logo" class="img-fluid" style="max-height: 50px; max-width: 100px;">
+            </div>
+          </div>
+          <h5 class="card-title">Create your account</h5>
+          <input type="text" class="form-control" id="nameFormControlInput" placeholder="Name">
+          <input type="email" class="form-control" id="emailFormControlInput" placeholder="Email">
+
+          <h1 class="date-of-birth">Date of birth</h1>
+          <p class="date-of-birth-explain">This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else.</p>
+
+          <div class="row mb-4 g-3">
+            <div class="col-4">
+              <div class="form-floating">
+                <select id="user-birthyear-select" class="form-select text-center" aria-label="Select year">
+                  <option value="" selected disabled hidden></option>
+                </select>
+                <label for="user-birthyear-select">Year</label>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-floating">
+                <select id="user-birthday-select" class="form-select text-center" aria-label="Select day">
+                  <option value="" selected disabled hidden></option>
+                </select>
+                <label for="user-birthday-select">Day</label>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-floating">
+                <select id="user-birthmonth-select" class="form-select text-center" aria-label="Select month">
+                  <option value="" selected disabled hidden></option>
+                </select>
+                <label for="user-birthmonth-select">Month</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col w-100">
+              <button type="submit" class="next-button-disabled btn btn-primary btn-block w-100">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<link rel="stylesheet" href="../CreateUser/CreateUser.css">
+<script>
+  // After showing the modal
+  if (!document.getElementById('createUser-js')) {
+      const script = document.createElement('script');
+      script.src = '../CreateUser/CreateUser.js';
+      script.id = 'createUser-js';
+      document.body.appendChild(script);
+  }
+</script>
