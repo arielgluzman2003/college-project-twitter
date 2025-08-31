@@ -7,6 +7,8 @@ class XFeedManager {
         this.currentPage = 1;
         this.isLoading = false;
         this.characterLimit = 280;
+        this.currentSection = 'home';
+        this.currentCategory = 'for-you';
         
         this.init();
     }
@@ -68,10 +70,32 @@ class XFeedManager {
         const searchInput = document.getElementById('search-input');
         searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
 
+        // Explore search functionality
+        const exploreSearchInput = document.getElementById('explore-search-input');
+        exploreSearchInput.addEventListener('input', (e) => this.handleExploreSearch(e.target.value));
+
+        // Navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = item.dataset.section;
+                if (section) {
+                    this.switchSection(section);
+                }
+            });
+        });
+
         // Tab switching
         const tabBtns = document.querySelectorAll('.tab-btn');
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => this.switchTab(btn));
+        });
+
+        // Explore category tabs
+        const exploreTabBtns = document.querySelectorAll('.explore-tab-btn');
+        exploreTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => this.switchExploreCategory(btn));
         });
 
         // Follow buttons
@@ -79,6 +103,128 @@ class XFeedManager {
             if (e.target.classList.contains('follow-btn')) {
                 this.handleFollow(e.target);
             }
+        });
+    }
+
+    // Switch between main sections (Home/Explore)
+    switchSection(section) {
+        // Update navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-section="${section}"]`).classList.add('active');
+
+        // Update content sections
+        document.querySelectorAll('.content-section').forEach(sectionEl => {
+            sectionEl.classList.remove('active');
+        });
+        document.getElementById(`${section}-section`).classList.add('active');
+
+        this.currentSection = section;
+
+        // Update header title
+        const headerTitle = document.querySelector('.x-header h1');
+        if (headerTitle) {
+            headerTitle.textContent = section === 'home' ? 'Home' : 'Explore';
+        }
+
+        // Show success message
+        this.showSuccess(`Switched to ${section} section`);
+    }
+
+    // Switch explore categories
+    switchExploreCategory(clickedTab) {
+        document.querySelectorAll('.explore-tab-btn').forEach(tab => tab.classList.remove('active'));
+        clickedTab.classList.add('active');
+
+        const category = clickedTab.dataset.category;
+        this.currentCategory = category;
+
+        // Update content
+        document.querySelectorAll('.explore-category-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`${category}-content`).classList.add('active');
+
+        this.showSuccess(`Switched to ${category.replace('-', ' ')} category`);
+    }
+
+    // Handle explore search
+    handleExploreSearch(query) {
+        if (!query.trim()) {
+            // Reset to current category content
+            this.switchExploreCategory(document.querySelector('.explore-tab-btn.active'));
+            return;
+        }
+
+        // Filter content based on search query
+        const searchResults = this.getExploreSearchResults(query);
+        this.displayExploreSearchResults(searchResults);
+    }
+
+    // Get explore search results
+    getExploreSearchResults(query) {
+        const results = [];
+        const searchTerm = query.toLowerCase();
+
+        // Search in news items
+        const newsItems = document.querySelectorAll('.news-item, .trending-post, .news-post, .sports-post, .entertainment-post');
+        newsItems.forEach(item => {
+            const title = item.querySelector('.news-title, .trending-post-content, .news-post-title, .sports-post-title, .entertainment-post-title');
+            const category = item.querySelector('.news-category, .trending-post-author, .news-post-source, .sports-post-league, .entertainment-post-source');
+            
+            if (title && (title.textContent.toLowerCase().includes(searchTerm) || 
+                (category && category.textContent.toLowerCase().includes(searchTerm)))) {
+                results.push(item.cloneNode(true));
+            }
+        });
+
+        return results;
+    }
+
+    // Display explore search results
+    displayExploreSearchResults(results) {
+        const exploreContent = document.querySelector('.explore-content');
+        
+        // Hide all category content
+        document.querySelectorAll('.explore-category-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Create search results container
+        let searchResultsContainer = document.getElementById('search-results-content');
+        if (!searchResultsContainer) {
+            searchResultsContainer = document.createElement('div');
+            searchResultsContainer.id = 'search-results-content';
+            searchResultsContainer.className = 'explore-category-content';
+            exploreContent.appendChild(searchResultsContainer);
+        }
+
+        searchResultsContainer.classList.add('active');
+        searchResultsContainer.innerHTML = '';
+
+        if (results.length === 0) {
+            searchResultsContainer.innerHTML = `
+                <div style="padding: 32px 16px; text-align: center; color: #71767B;">
+                    <i class="fas fa-search" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                    <h3>No results found</h3>
+                    <p>Try searching for something else</p>
+                </div>
+            `;
+            return;
+        }
+
+        const resultsHeader = document.createElement('h3');
+        resultsHeader.textContent = `Search results (${results.length})`;
+        resultsHeader.style.cssText = 'font-size: 20px; font-weight: 700; color: #E7E9EA; margin-bottom: 16px; padding: 16px 16px 0;';
+        searchResultsContainer.appendChild(resultsHeader);
+
+        const resultsContainer = document.createElement('div');
+        resultsContainer.style.padding = '0 16px';
+        searchResultsContainer.appendChild(resultsContainer);
+
+        results.forEach(result => {
+            resultsContainer.appendChild(result);
         });
     }
 

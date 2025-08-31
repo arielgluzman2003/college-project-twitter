@@ -33,11 +33,11 @@
                 
                 <!-- Navigation Menu -->
                 <nav class="x-nav">
-                    <a href="#" class="nav-item active">
+                    <a href="#" class="nav-item active" data-section="home">
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="#" class="nav-item" data-section="explore">
                         <i class="fas fa-search"></i>
                         <span>Explore</span>
                     </a>
@@ -94,54 +94,202 @@
 
         <!-- Main Content -->
         <main class="x-main">
-            <!-- Header -->
-            <header class="x-header">
-                <div class="header-content">
-                    <h1>Home</h1>
-                    <div class="header-tabs">
-                        <button class="tab-btn active">For you</button>
-                        <button class="tab-btn">Following</button>
+            <!-- Home Section -->
+            <section id="home-section" class="content-section active">
+                <!-- Header -->
+                <header class="x-header">
+                    <div class="header-content">
+                        <h1>Home</h1>
+                        <div class="header-tabs">
+                            <button class="tab-btn active">For you</button>
+                            <button class="tab-btn">Following</button>
+                        </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            <!-- Create Post Section -->
-            <div class="post-composer">
-                <div class="composer-content">
-                    <img src="https://via.placeholder.com/48/1DA1F2/ffffff?text=JD" alt="Profile" class="composer-avatar">
-                    <div class="composer-input">
-                        <textarea placeholder="What's happening?" id="post-content"></textarea>
-                        <div class="composer-actions">
-                            <div class="action-buttons">
-                                <button class="action-btn" id="media-btn">
-                                    <i class="fas fa-image"></i>
-                                </button>
-                                <button class="action-btn">
-                                    <i class="fas fa-poll-h"></i>
-                                </button>
-                                <button class="action-btn">
-                                    <i class="fas fa-smile"></i>
-                                </button>
-                                <button class="action-btn">
-                                    <i class="fas fa-calendar"></i>
-                                </button>
-                                <button class="action-btn">
-                                    <i class="fas fa-map-marker-alt"></i>
+                <!-- Create Post Section -->
+                <div class="post-composer">
+                    <div class="composer-content">
+                        <img src="https://via.placeholder.com/48/1DA1F2/ffffff?text=JD" alt="Profile" class="composer-avatar">
+                        <div class="composer-input">
+                            <textarea placeholder="What's happening?" id="post-content"></textarea>
+                            <div class="composer-actions">
+                                <div class="action-buttons">
+                                    <button class="action-btn" id="media-btn">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-poll-h"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-smile"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-calendar"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </button>
+                                </div>
+                                <button class="post-submit-btn" id="post-submit-btn" disabled>
+                                    Post
                                 </button>
                             </div>
-                            <button class="post-submit-btn" id="post-submit-btn" disabled>
-                                Post
-                            </button>
+                        </div>
+                    </div>
+                    <input type="file" id="media-input" accept="image/*,video/*" style="display: none;">
+                </div>
+
+                <!-- Posts Feed -->
+                <div class="posts-feed" id="posts-container">
+                    <!-- Posts will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Explore Section -->
+            <section id="explore-section" class="content-section">
+                <!-- Explore Header -->
+                <header class="x-header">
+                    <div class="header-content">
+                        <div class="explore-search-container">
+                            <div class="explore-search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search" id="explore-search-input">
+                            </div>
+                        </div>
+                        <div class="explore-tabs">
+                            <button class="explore-tab-btn active" data-category="for-you">For you</button>
+                            <button class="explore-tab-btn" data-category="trending">Trending</button>
+                            <button class="explore-tab-btn" data-category="news">News</button>
+                            <button class="explore-tab-btn" data-category="sports">Sports</button>
+                            <button class="explore-tab-btn" data-category="entertainment">Entertainment</button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Explore Content -->
+                <div class="explore-content">
+                    <!-- For You Content -->
+                    <div id="for-you-content" class="explore-category-content active">
+                        <div class="today-news">
+                            <h3>Today's News</h3>
+                            <div class="news-item">
+                                <div class="news-category">Technology</div>
+                                <div class="news-title">AI Breakthrough in Machine Learning Research</div>
+                                <div class="news-stats">2.5K posts</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-category">Science</div>
+                                <div class="news-title">New Discovery in Quantum Computing</div>
+                                <div class="news-stats">1.8K posts</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-category">Education</div>
+                                <div class="news-title">Online Learning Platforms See Record Growth</div>
+                                <div class="news-stats">3.2K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trending Content -->
+                    <div id="trending-content" class="explore-category-content">
+                        <div class="trending-posts">
+                            <h3>Trending Now</h3>
+                            <div class="trending-post">
+                                <div class="trending-post-header">
+                                    <span class="trending-post-author">Tech News</span>
+                                    <span class="trending-post-time">2h</span>
+                                </div>
+                                <div class="trending-post-content">#JavaScript remains the most popular programming language in 2024 according to latest developer surveys</div>
+                                <div class="trending-post-stats">15.2K posts</div>
+                            </div>
+                            <div class="trending-post">
+                                <div class="trending-post-header">
+                                    <span class="trending-post-author">Web Dev</span>
+                                    <span class="trending-post-time">4h</span>
+                                </div>
+                                <div class="trending-post-content">React 19 is coming with amazing new features! #React #WebDevelopment</div>
+                                <div class="trending-post-stats">8.7K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- News Content -->
+                    <div id="news-content" class="explore-category-content">
+                        <div class="news-posts">
+                            <h3>Latest News</h3>
+                            <div class="news-post">
+                                <div class="news-post-header">
+                                    <span class="news-post-source">CNN</span>
+                                    <span class="news-post-time">1h</span>
+                                </div>
+                                <div class="news-post-title">Global Tech Summit Announces New AI Regulations</div>
+                                <div class="news-post-excerpt">World leaders gather to discuss the future of artificial intelligence...</div>
+                                <div class="news-post-stats">5.3K posts</div>
+                            </div>
+                            <div class="news-post">
+                                <div class="news-post-header">
+                                    <span class="news-post-source">BBC</span>
+                                    <span class="news-post-time">3h</span>
+                                </div>
+                                <div class="news-post-title">Climate Change Conference Sets New Targets</div>
+                                <div class="news-post-excerpt">International agreement reached on carbon emission reductions...</div>
+                                <div class="news-post-stats">4.1K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sports Content -->
+                    <div id="sports-content" class="explore-category-content">
+                        <div class="sports-posts">
+                            <h3>Sports Updates</h3>
+                            <div class="sports-post">
+                                <div class="sports-post-header">
+                                    <span class="sports-post-league">NBA</span>
+                                    <span class="sports-post-time">30m</span>
+                                </div>
+                                <div class="sports-post-title">Lakers vs Warriors: Final Score 112-108</div>
+                                <div class="sports-post-excerpt">LeBron James leads Lakers to victory with 32 points...</div>
+                                <div class="sports-post-stats">12.8K posts</div>
+                            </div>
+                            <div class="sports-post">
+                                <div class="sports-post-header">
+                                    <span class="sports-post-league">Premier League</span>
+                                    <span class="sports-post-time">2h</span>
+                                </div>
+                                <div class="sports-post-title">Manchester United Signs New Star Player</div>
+                                <div class="sports-post-excerpt">Club announces record-breaking transfer deal...</div>
+                                <div class="sports-post-stats">9.4K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entertainment Content -->
+                    <div id="entertainment-content" class="explore-category-content">
+                        <div class="entertainment-posts">
+                            <h3>Entertainment News</h3>
+                            <div class="entertainment-post">
+                                <div class="entertainment-post-header">
+                                    <span class="entertainment-post-source">Hollywood</span>
+                                    <span class="entertainment-post-time">1h</span>
+                                </div>
+                                <div class="entertainment-post-title">New Marvel Movie Breaks Box Office Records</div>
+                                <div class="entertainment-post-excerpt">Latest superhero film earns $200M in opening weekend...</div>
+                                <div class="entertainment-post-stats">18.5K posts</div>
+                            </div>
+                            <div class="entertainment-post">
+                                <div class="entertainment-post-header">
+                                    <span class="entertainment-post-source">Music</span>
+                                    <span class="entertainment-post-time">4h</span>
+                                </div>
+                                <div class="entertainment-post-title">Taylor Swift Announces World Tour 2024</div>
+                                <div class="entertainment-post-excerpt">Global tour to visit 50+ cities across 6 continents...</div>
+                                <div class="entertainment-post-stats">25.7K posts</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <input type="file" id="media-input" accept="image/*,video/*" style="display: none;">
-            </div>
-
-            <!-- Posts Feed -->
-            <div class="posts-feed" id="posts-container">
-                <!-- Posts will be dynamically loaded here -->
-            </div>
+            </section>
         </main>
 
         <!-- Right Sidebar -->
