@@ -5,13 +5,14 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     alert(`Welcome, ${username}!`);
 });
 
+
 document.getElementById('openCreateUserModal').addEventListener('click', function(e) {
     e.preventDefault();
     fetch('../CreateUser/CreateUserModal.html')
         .then(response => response.text())
         .then(html => {
             document.getElementById('createUserModalContainer').innerHTML = html;
-            // Load CreateUser CSS if needed
+            // Load CreateUser CSS
             if (!document.getElementById('createUser-css')) {
                 const link = document.createElement('link');
                 link.rel = 'stylesheet';
@@ -19,8 +20,29 @@ document.getElementById('openCreateUserModal').addEventListener('click', functio
                 link.id = 'createUser-css';
                 document.head.appendChild(link);
             }
+            
             // Show the modal
-            const modal = new bootstrap.Modal(document.getElementById('createUserModal'));
+            const modalElement = document.getElementById('createUserModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            
+            // Add a listener to remove the CSS when the modal is hidden
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                const link = document.getElementById('createUser-css');
+                if (link) {
+                    link.remove();
+                }
+            }, { once: true }); // The { once: true } ensures the listener is removed after it runs
+        });
+});
+
+document.querySelector('#loginForm button[type="submit"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    fetch('LoginModal.html')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('loginUserModalContainer').innerHTML = html;
+            const modal = new bootstrap.Modal(document.getElementById('loginUserModal'));
             modal.show();
         });
 });
