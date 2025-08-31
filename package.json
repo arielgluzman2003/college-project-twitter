@@ -1,0 +1,14 @@
+{
+  "name": "mongodb-connector-sample",
+  "version": "1.0.0",
+  "description": "A simple MongoDB connector with user, post, and like schemas.",
+  "main": "src/db.js",
+  "scripts": {
+    "start": "node src/db.js"
+  },
+  "dependencies": {
+    "mongoose": "^6.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
