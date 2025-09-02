@@ -2,8 +2,8 @@ const userService = require('../Model/services/userService');
 
 async function authenticateUser(req, res) {
     try {
-        const user = await userService.getUser(req.params.username);
-        if (user && user.password === req.query.password) {
+        const user = await userService.getUser(req.body.username);
+        if (user && user.password === req.body.password) {
             res.status(200).json({ message: 'Authentication successful' });
         } else {
             res.status(401).json({ message: 'Authentication failed' });
