@@ -118,11 +118,11 @@
     if (e.target.id === 'loginUserForm') {
       e.preventDefault();
       const username = document.getElementById('loginUsername')?.value || '';
-      const password = '123456';
+      const password = document.getElementById('loginPassword')?.value || '';
 
       showSpinner();
       $.ajax({
-        url: 'http://localhost:3000/api/login',
+        url: 'http://localhost:3000/api/users/authenticate',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ username, password })

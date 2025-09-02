@@ -4,17 +4,17 @@
       <div class="card w-100 signup-card m-0 border-0" style="background: transparent;">
         <div class="card-body">
           <div class="row mb-2">
-            <div class="col-2">
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="col-10">
-              <img src="../../assets/X_logo.jpg" alt="X Logo" class="img-fluid" style="max-height: 50px; max-width: 100px;">
-            </div>
+          <div class="d-flex justify-content-center align-items-center mb-3 position-relative">
+            <img src="../../assets/x_logo.jpg" alt="X Logo" style="width:48px; height:48px;">
+            <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <h5 class="card-title">Create your account</h5>
-          <input type="text" class="form-control" id="nameFormControlInput" placeholder="Name">
-          <input type="email" class="form-control" id="emailFormControlInput" placeholder="Email">
-
+          </div>
+          <h2 class="fw-bold text-white text-center mb-4" style="font-size:2rem;">צור משתמש ל-X</h2>
+          <input type="text" class="form-control" id="nameFormControlInput" placeholder="שם מלא">
+          <input type="email" class="form-control" id="emailFormControlInput" placeholder="כתובת מייל">
+          <!-- <input type="text" class="form-control" id="AddressFormControlInput" placeholder="כתובת מגורים"> -->
+          <input type="phone" class="form-control" id="PhoneFormControlInput" placeholder="טלפון">
+          <input type="password" class="form-control" id="PasswordFormControlInput" placeholder="סיסמה">
           <h1 class="date-of-birth">Date of birth</h1>
           <p class="date-of-birth-explain">This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else.</p>
 
@@ -24,7 +24,7 @@
                 <select id="user-birthyear-select" class="form-select text-center" aria-label="Select year">
                   <option value="" selected disabled hidden></option>
                 </select>
-                <label for="user-birthyear-select">Year</label>
+                <label for="user-birthyear-select">שנה</label>
               </div>
             </div>
             <div class="col-4">
@@ -32,7 +32,7 @@
                 <select id="user-birthday-select" class="form-select text-center" aria-label="Select day">
                   <option value="" selected disabled hidden></option>
                 </select>
-                <label for="user-birthday-select">Day</label>
+                <label for="user-birthday-select">יום</label>
               </div>
             </div>
             <div class="col-4">
@@ -40,13 +40,13 @@
                 <select id="user-birthmonth-select" class="form-select text-center" aria-label="Select month">
                   <option value="" selected disabled hidden></option>
                 </select>
-                <label for="user-birthmonth-select">Month</label>
+                <label for="user-birthmonth-select">חודש</label>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col w-100">
-              <button type="submit" class="next-button-disabled btn btn-primary btn-block w-100">Next</button>
+              <button type="submit" class="next-button-disabled btn btn-primary btn-block w-100">הבא</button>
             </div>
           </div>
         </div>
