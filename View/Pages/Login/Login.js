@@ -41,6 +41,17 @@
       instance.hide();
     });
   }
+  
+  // New function to close the create user modal
+  function closeCreateUserModal() {
+    const el = document.getElementById('createUserModal');
+    if (!el) return Promise.resolve();
+    const instance = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+    return new Promise((resolve) => {
+      el.addEventListener('hidden.bs.modal', resolve, { once: true });
+      instance.hide();
+    });
+  }
 
   function loadAndShowCreateUserModal() {
     showSpinner();
@@ -65,7 +76,49 @@
         }
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
+        
+        // Event listener for the user creation form
+        const createUserForm = document.getElementById('createUserForm');
+        if (createUserForm) {
+            createUserForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Collect all user data from the form.
+                const name = document.getElementById('UserNameCreation')?.value || '';
+                const email = document.getElementById('emailCreation')?.value || '';
+                const username = document.getElementById('UserNameCreation')?.value || '';
+                const password = document.getElementById('PasswordCreation')?.value || '';
+                const birthYear = document.getElementById('user-birthyear-select')?.value || '';
+                const birthMonth = document.getElementById('user-birthmonth-select')?.value || ''; // Corrected ID
+                const birthDay = document.getElementById('user-birthday-select')?.value || '';
 
+                showSpinner();
+                $.ajax({
+                    url: 'http://localhost:3000/api/users/create', // New endpoint for user creation
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({name, email, username, password ,birthYear, birthMonth, birthDay })
+                })
+                .done((response) => {
+                    console.log('User creation success:', response);
+                    if (response.success) {
+                        alert(`Account created successfully for ${username}!`);
+                        closeCreateUserModal();
+                    } else {
+                        alert(response.message || 'User creation failed. Please try again.');
+                    }
+                })
+                .fail((xhr, status, error) => {
+                    console.error('User creation failed:', status, error);
+                    if (xhr.status === 401) {
+                        alert('Authentication failed. Please check your credentials.');
+                    } else {
+                        alert('User creation failed due to a server error or no response. Please try again.');
+                    }
+                })
+                .always(hideSpinner);
+            });
+        }
+        
         modalEl.addEventListener(
           'hidden.bs.modal',
           () => {
@@ -138,7 +191,11 @@
         })
         .fail((xhr, status, error) => {
           console.error('Login failed:', status, error);
-          alert('Login failed, please try again.');
+          if (xhr.status === 401) {
+            alert('Authentication failed. Please Try again.');
+          } else {
+            alert('Login failed due to a server error or no response. Please try again.');
+          }
         })
         .always(hideSpinner);
     }
