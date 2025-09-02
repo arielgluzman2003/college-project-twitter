@@ -76,48 +76,7 @@
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
         
-        // Event listener for the user creation form
-        const createUserForm = document.getElementById('createUserForm');
-        if (createUserForm) {
-            createUserForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // Collect all user data from the form using correct IDs from HTML
-                const name = document.getElementById('NameCreation')?.value || '';
-                const email = document.getElementById('EmailCreation')?.value || '';
-                const username = document.getElementById('UserNameCreation')?.value || '';
-                const password = document.getElementById('PasswordCreation')?.value || '';
-                const birthYear = document.getElementById('user-birthyear-select')?.value || '';
-                const birthMonth = document.getElementById('user-birthmonth-select')?.value || '';
-                const birthDay = document.getElementById('user-birthday-select')?.value || '';
-
-                showSpinner();
-                $.ajax({
-                    url: 'http://localhost:3000/api/users/create',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ name, email, username, password, birthYear, birthMonth, birthDay })
-                })
-                .done((response) => {
-                    console.log('User creation success:', response);
-                    if (response.success) {
-                        alert(`Account created successfully for ${username}!`);
-                        closeCreateUserModal();
-                    } else {
-                        alert(response.message || 'User creation failed. Please try again.');
-                    }
-                })
-                .fail((xhr, status, error) => {
-                    console.error('User creation failed:', status, error);
-                    if (xhr.status === 401) {
-                        alert('Authentication failed. Please check your credentials.');
-                    } else {
-                        alert('User creation failed due to a server error or no response. Please try again.');
-                    }
-                })
-                .always(hideSpinner);
-            });
-        }
-        
+        // This listener is crucial for cleanup when the modal is closed
         modalEl.addEventListener(
           'hidden.bs.modal',
           () => {
@@ -166,7 +125,6 @@
 
   // ---- All Event Bindings in one place for robustness ----
   document.addEventListener('submit', (e) => {
-    // This listener will only work for forms with a matching ID, ensuring it works after the modal is loaded.
     if (e.target.id === 'loginUserForm') {
       e.preventDefault();
       const username = document.getElementById('loginUsername')?.value || '';
@@ -201,7 +159,6 @@
   });
 
   document.addEventListener('click', (e) => {
-    // This delegated handler checks for a button that opens the login modal.
     const loginSubmitBtn = e.target.closest('#loginForm button[type="submit"]');
     if (loginSubmitBtn) {
       e.preventDefault();
@@ -209,7 +166,6 @@
       return;
     }
 
-    // This delegated handler checks for a link that opens the create user modal.
     const createAccountLink = e.target.closest('#goToCreateUser');
     if (createAccountLink) {
       e.preventDefault();
@@ -217,7 +173,6 @@
       return;
     }
 
-    // This handler checks for the button that opens the create user modal from the main page.
     const openCreateUserBtn = e.target.closest('#openCreateUserModal');
     if (openCreateUserBtn) {
       e.preventDefault();
