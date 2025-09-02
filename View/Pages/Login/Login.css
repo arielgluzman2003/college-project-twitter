@@ -16,6 +16,7 @@ body {
     background: #212327;
     color: #fff;
     border: 1px solid #333;
+    margin-bottom: 2rem !important;
 }
 .form-control:focus {
     background: #212327;
@@ -28,6 +29,7 @@ body {
     color: #0f1419;
     border: none;
     font-weight: bold;
+    margin-bottom: 2rem !important;
 }
 .btn-primary:hover {
     background-color: #e6e6e6;
@@ -50,6 +52,7 @@ hr {
     font-weight: bold;
     font-size: 1.1rem;
     padding: 0.75rem 1.5rem;
+    margin-bottom: 2rem !important;
 }
 .btn-light:hover {
     background: #e6e6e6;
@@ -61,10 +64,81 @@ hr {
     font-weight: bold;
     font-size: 1.1rem;
     padding: 0.75rem 1.5rem;
+    margin-bottom: 2rem !important;
 }
 .btn-outline-light:hover {
     background: #222;
     color: #fff;
+}
+/* Buttons */
+.btn {
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+    font-size: 1rem !important;
+}
+.btn-light, .btn-outline-light {
+    margin-bottom: 1.2rem !important;
+}
+.btn-outline-light {
+    color: #fff !important;
+    font-weight: bold !important;
+    border: 1.5px solid #fff !important;
+    background: transparent !important;
+}
+
+/* Modal */
+.signup-card,
+.modal-content {
+    background: #000 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 0 32px 0 rgba(0,0,0,0.8) !important;
+    color: #fff !important;
+    border: none !important;
+}
+.card-body {
+    padding: 2rem 1.5rem !important;
+}
+
+
+/* .modal-dialog {
+    max-width: 520px !important;
+    width: 100%;
+    height: auto !important;
+    margin: auto;
+} */
+
+
+/* Remove scroll and fit modal to page */
+.modal-dialog {
+    max-width: 520px !important;
+    width: 100%;
+    /* min-height: 550px !important; Increase this value as needed */
+    height: auto;
+    margin: auto;
+    display: flex;
+    align-items: center;
+}
+
+/* Divider */
+.divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.divider div {
+    flex: 1;
+    height: 1.5px;
+    background: #38444d;
+    min-width: 60px;
+}
+.divider span {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #fff;
+    padding: 0 1rem;
+    white-space: nowrap;
 }
 .big-x-logo {
     max-width: 60%;
@@ -84,4 +158,27 @@ hr {
         flex: 0 0 100%;
         max-width: 100%;
     }
+}
+
+/* Make modal backdrop match Twitter/X grey */
+.modal-backdrop.show {
+    background-color: #6b89a3 !important;
+    opacity: 0.55 !important;
+}
+
+body {
+  background-color: #000; /* Set the background to black */
+}
+
+.terms-of-service {
+  color: rgb(217, 217, 217); /* Brighter grey text for a black background */
+  width: 300px;
+  line-height: 1.3;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+}
+
+.terms-of-service a {
+  color: rgb(29, 155, 240); /* Link color remains the same */
+  text-decoration: none;
 }
