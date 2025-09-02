@@ -2,12 +2,16 @@
   "name": "mongodb-connector-sample",
   "version": "1.0.0",
   "description": "A simple MongoDB connector with user, post, and like schemas.",
-  "main": "src/db.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node src/db.js"
+    "start": "node Model/app.js"
   },
   "dependencies": {
-    "mongoose": "^6.0.0"
+    "express": "^5.1.0",
+    "mongoose": "^6.0.0",
+    "dotenv": "^16.0.0",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5"
   },
   "author": "",
   "license": "ISC"
