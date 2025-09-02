@@ -1,10 +1,23 @@
 const userService = require('../Model/services/userService');
 
+async function authenticateUser(req, res) {
+    try {
+        const user = await userService.getUser(req.params.username);
+        if (user && user.password === req.query.password) {
+            res.status(200).json({ message: 'Authentication successful' });
+        } else {
+            res.status(401).json({ message: 'Authentication failed' });
+    }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
 // Create user
 async function createUser(req, res) {
     try {
         const user = await userService.createUser(req.body);
-        res.status(201).json(user);
+        res.status(200);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -40,4 +53,4 @@ async function deleteUser(req, res) {
     }
 }
 
-module.exports = { createUser, getUser, updateUser, deleteUser };
+module.exports = { createUser, getUser, updateUser, authenticateUser, deleteUser };
