@@ -42,7 +42,6 @@
     });
   }
   
-  // New function to close the create user modal
   function closeCreateUserModal() {
     const el = document.getElementById('createUserModal');
     if (!el) return Promise.resolve();
@@ -82,21 +81,21 @@
         if (createUserForm) {
             createUserForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                // Collect all user data from the form.
-                const name = document.getElementById('UserNameCreation')?.value || '';
-                const email = document.getElementById('emailCreation')?.value || '';
+                // Collect all user data from the form using correct IDs from HTML
+                const name = document.getElementById('NameCreation')?.value || '';
+                const email = document.getElementById('EmailCreation')?.value || '';
                 const username = document.getElementById('UserNameCreation')?.value || '';
                 const password = document.getElementById('PasswordCreation')?.value || '';
                 const birthYear = document.getElementById('user-birthyear-select')?.value || '';
-                const birthMonth = document.getElementById('user-birthmonth-select')?.value || ''; // Corrected ID
+                const birthMonth = document.getElementById('user-birthmonth-select')?.value || '';
                 const birthDay = document.getElementById('user-birthday-select')?.value || '';
 
                 showSpinner();
                 $.ajax({
-                    url: 'http://localhost:3000/api/users/create', // New endpoint for user creation
+                    url: 'http://localhost:3000/api/users/create',
                     method: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({name, email, username, password ,birthYear, birthMonth, birthDay })
+                    data: JSON.stringify({ name, email, username, password, birthYear, birthMonth, birthDay })
                 })
                 .done((response) => {
                     console.log('User creation success:', response);
@@ -192,7 +191,7 @@
         .fail((xhr, status, error) => {
           console.error('Login failed:', status, error);
           if (xhr.status === 401) {
-            alert('Authentication failed. Please Try again.');
+            alert('Authentication failed. Please check your credentials.');
           } else {
             alert('Login failed due to a server error or no response. Please try again.');
           }
