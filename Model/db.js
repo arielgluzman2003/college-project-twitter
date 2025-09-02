@@ -1,15 +1,22 @@
-const { MongoClient } = require('mongodb');
+require('dotenv').config();
+const mongoose = require('mongoose');
 
-const uri = 'your_mongodb_connection_string'; // Replace with your MongoDB connection string
-let dbInstance;
+const uri = process.env.MONGODB_URI;
+const dbName = process.env.MONGODB_DBNAME;
+
+mongoose.set('strictQuery', false);
 
 const connectDB = async () => {
-    if (!dbInstance) {
-        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-        await client.connect();
-        dbInstance = client.db('your_database_name'); // Replace with your database name
+    try {
+        await mongoose.connect(`${uri}/${dbName}`, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('Connected to MongoDB:', dbName);
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+        process.exit(1);
     }
-    return dbInstance;
 };
 
 module.exports = connectDB;
