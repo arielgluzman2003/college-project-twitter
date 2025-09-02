@@ -4,9 +4,9 @@ async function authenticateUser(req, res) {
     try {
         const user = await userService.getUser(req.body.username);
         if (user && user.password === req.body.password) {
-            res.status(200).json({ message: 'Authentication successful' });
+            res.status(200).json({ success: true, message: 'Authentication successful' });
         } else {
-            res.status(401).json({ message: 'Authentication failed' });
+            res.status(401).json({ success: true, message: 'Authentication failed' });
     }
     } catch (err) {
         res.status(500).json({ error: err.message });
