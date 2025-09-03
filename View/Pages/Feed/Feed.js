@@ -10,6 +10,15 @@ class XFeedManager {
         this.currentSection = 'home';
         this.currentCategory = 'for-you';
         
+        // Weather Widget Configuration
+        this.weatherConfig = {
+            apiKey: 'YOUR_OPENWEATHERMAP_API_KEY', // TODO: Replace with actual API key
+            city: 'London', // TODO: Replace with desired city name
+            refreshInterval: 10 * 60 * 1000, // 10 minutes in milliseconds
+            units: 'metric' // metric, imperial, or kelvin
+        };
+        this.weatherRefreshTimer = null;
+        
         this.init();
     }
 
@@ -19,6 +28,7 @@ class XFeedManager {
             this.setupEventListeners();
             this.loadPosts();
             this.updateCharacterCount();
+            this.initWeatherWidget();
         } catch (error) {
             console.error('Initialization error:', error);
             this.showError('Failed to initialize the feed');
@@ -104,6 +114,183 @@ class XFeedManager {
                 this.handleFollow(e.target);
             }
         });
+
+        // Weather widget event listeners
+        const weatherRefreshBtn = document.getElementById('weather-refresh-btn');
+        const weatherRetryBtn = document.getElementById('weather-retry-btn');
+        
+        if (weatherRefreshBtn) {
+            weatherRefreshBtn.addEventListener('click', () => this.refreshWeather());
+        }
+        
+        if (weatherRetryBtn) {
+            weatherRetryBtn.addEventListener('click', () => this.refreshWeather());
+        }
+    }
+
+    // Initialize Weather Widget
+    initWeatherWidget() {
+        // Check if weather widget exists
+        if (!document.getElementById('weather-widget')) {
+            console.warn('Weather widget not found in DOM');
+            return;
+        }
+
+        // Start weather refresh cycle
+        this.startWeatherRefreshCycle();
+        
+        // Load initial weather data
+        this.loadWeatherData();
+    }
+
+    // Start automatic weather refresh cycle
+    startWeatherRefreshCycle() {
+        // Clear existing timer if any
+        if (this.weatherRefreshTimer) {
+            clearInterval(this.weatherRefreshTimer);
+        }
+
+        // Set new timer for automatic refresh
+        this.weatherRefreshTimer = setInterval(() => {
+            this.loadWeatherData();
+        }, this.weatherConfig.refreshInterval);
+
+        console.log(`Weather widget will refresh every ${this.weatherConfig.refreshInterval / 60000} minutes`);
+    }
+
+    // Load weather data from OpenWeatherMap API
+    async loadWeatherData() {
+        try {
+            // Show loading state
+            this.showWeatherLoading();
+
+            // Check if API key is configured
+            if (this.weatherConfig.apiKey === 'YOUR_OPENWEATHERMAP_API_KEY') {
+                throw new Error('OpenWeatherMap API key not configured. Please add your API key in the weatherConfig object.');
+            }
+
+            // Build API URL
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(this.weatherConfig.city)}&appid=${this.weatherConfig.apiKey}&units=${this.weatherConfig.units}`;
+
+            // Fetch weather data
+            const response = await fetch(apiUrl);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const weatherData = await response.json();
+            
+            // Check for API error response
+            if (weatherData.cod && weatherData.cod !== 200) {
+                throw new Error(weatherData.message || 'Unknown API error');
+            }
+
+            // Update weather widget with data
+            this.updateWeatherWidget(weatherData);
+            
+            // Update last updated time
+            this.updateWeatherTimestamp();
+
+        } catch (error) {
+            console.error('Error loading weather data:', error);
+            this.showWeatherError(error.message);
+        }
+    }
+
+    // Update weather widget with API data
+    updateWeatherWidget(weatherData) {
+        try {
+            // Extract weather information
+            const cityName = weatherData.name;
+            const country = weatherData.sys?.country;
+            const temperature = Math.round(weatherData.main?.temp);
+            const feelsLike = Math.round(weatherData.main?.feels_like);
+            const humidity = weatherData.main?.humidity;
+            const windSpeed = Math.round(weatherData.wind?.speed * 3.6); // Convert m/s to km/h
+            const description = weatherData.weather?.[0]?.description;
+            const iconCode = weatherData.weather?.[0]?.icon;
+
+            // Update DOM elements
+            const cityElement = document.getElementById('weather-city');
+            const tempElement = document.getElementById('weather-temperature');
+            const feelsLikeElement = document.getElementById('weather-feels-like');
+            const humidityElement = document.getElementById('weather-humidity');
+            const windElement = document.getElementById('weather-wind');
+            const descriptionElement = document.getElementById('weather-description');
+            const iconElement = document.getElementById('weather-icon');
+
+            if (cityElement) cityElement.textContent = `${cityName}${country ? `, ${country}` : ''}`;
+            if (tempElement) tempElement.textContent = temperature || '--';
+            if (feelsLikeElement) feelsLikeElement.textContent = feelsLike || '--';
+            if (humidityElement) humidityElement.textContent = humidity || '--';
+            if (windElement) windElement.textContent = windSpeed || '--';
+            if (descriptionElement) descriptionElement.textContent = description || 'Weather description';
+
+            // Update weather icon
+            if (iconElement && iconCode) {
+                const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                iconElement.src = iconUrl;
+                iconElement.alt = description || 'Weather icon';
+            }
+
+            // Show weather content
+            this.showWeatherContent();
+
+        } catch (error) {
+            console.error('Error updating weather widget:', error);
+            this.showWeatherError('Failed to update weather display');
+        }
+    }
+
+    // Update weather timestamp
+    updateWeatherTimestamp() {
+        const timestampElement = document.getElementById('weather-updated-time');
+        if (timestampElement) {
+            const now = new Date();
+            timestampElement.textContent = now.toLocaleTimeString();
+        }
+    }
+
+    // Show weather loading state
+    showWeatherLoading() {
+        const loadingElement = document.getElementById('weather-loading');
+        const contentElement = document.getElementById('weather-content');
+        const errorElement = document.getElementById('weather-error');
+
+        if (loadingElement) loadingElement.style.display = 'block';
+        if (contentElement) contentElement.style.display = 'none';
+        if (errorElement) errorElement.style.display = 'none';
+    }
+
+    // Show weather content
+    showWeatherContent() {
+        const loadingElement = document.getElementById('weather-loading');
+        const contentElement = document.getElementById('weather-content');
+        const errorElement = document.getElementById('weather-error');
+
+        if (loadingElement) loadingElement.style.display = 'none';
+        if (contentElement) contentElement.style.display = 'block';
+        if (errorElement) errorElement.style.display = 'none';
+    }
+
+    // Show weather error state
+    showWeatherError(message) {
+        const loadingElement = document.getElementById('weather-loading');
+        const contentElement = document.getElementById('weather-content');
+        const errorElement = document.getElementById('weather-error');
+        const errorMessageElement = document.getElementById('weather-error-message');
+
+        if (loadingElement) loadingElement.style.display = 'none';
+        if (contentElement) contentElement.style.display = 'none';
+        if (errorElement) errorElement.style.display = 'block';
+        if (errorMessageElement) errorMessageElement.textContent = message;
+    }
+
+    // Refresh weather data manually
+    refreshWeather() {
+        console.log('Manual weather refresh requested');
+        this.loadWeatherData();
     }
 
     // Switch between main sections (Home/Explore)
@@ -620,11 +807,26 @@ class XFeedManager {
             messageDiv.remove();
         }, 3000);
     }
+
+    // Cleanup method for weather timer
+    cleanup() {
+        if (this.weatherRefreshTimer) {
+            clearInterval(this.weatherRefreshTimer);
+            this.weatherRefreshTimer = null;
+        }
+    }
 }
 
 // Initialize the X feed manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.xFeedManager = new XFeedManager();
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (window.xFeedManager) {
+        window.xFeedManager.cleanup();
+    }
 });
 
 // Export for potential module usage

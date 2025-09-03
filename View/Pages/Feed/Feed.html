@@ -303,6 +303,75 @@
                     </div>
                 </div>
 
+                <!-- Weather Widget -->
+                <div class="weather-widget">
+                    <div class="weather-header">
+                        <h3><i class="fas fa-cloud-sun me-2"></i>Weather</h3>
+                        <button class="weather-refresh-btn" id="weather-refresh-btn" title="Refresh weather">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Loading State -->
+                    <div id="weather-loading" class="weather-loading">
+                        <div class="weather-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <p>Loading weather...</p>
+                    </div>
+                    
+                    <!-- Weather Content -->
+                    <div id="weather-content" class="weather-content" style="display: none;">
+                        <div class="weather-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="weather-city">City Name</span>
+                        </div>
+                        
+                        <div class="weather-main">
+                            <div class="weather-icon">
+                                <img id="weather-icon" src="" alt="Weather icon">
+                            </div>
+                            <div class="weather-temp">
+                                <span id="weather-temperature">--</span>°C
+                            </div>
+                        </div>
+                        
+                        <div class="weather-description">
+                            <span id="weather-description">Weather description</span>
+                        </div>
+                        
+                        <div class="weather-details">
+                            <div class="weather-detail">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span>Feels like: <span id="weather-feels-like">--</span>°C</span>
+                            </div>
+                            <div class="weather-detail">
+                                <i class="fas fa-tint"></i>
+                                <span>Humidity: <span id="weather-humidity">--</span>%</span>
+                            </div>
+                            <div class="weather-detail">
+                                <i class="fas fa-wind"></i>
+                                <span>Wind: <span id="weather-wind">--</span> km/h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="weather-updated">
+                            <small>Last updated: <span id="weather-updated-time">--</span></small>
+                        </div>
+                    </div>
+                    
+                    <!-- Error State -->
+                    <div id="weather-error" class="weather-error" style="display: none;">
+                        <div class="weather-error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <p id="weather-error-message">Unable to load weather data</p>
+                        <button class="weather-retry-btn" id="weather-retry-btn">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Trending Section -->
                 <div class="trending-section">
                     <h3>Trends for you</h3>
