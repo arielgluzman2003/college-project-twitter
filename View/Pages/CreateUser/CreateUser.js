@@ -82,3 +82,75 @@ document.addEventListener('shown.bs.modal', function(event) {
         setupCreateUserFields();
     }
 });
+
+
+
+
+// path: /CreateUser/CreateUser.js
+(function () {
+  'use strict';
+
+  function showSpinner() {
+    const spinner = document.createElement('div');
+    spinner.id = 'global-spinner';
+    spinner.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50';
+    spinner.innerHTML = '<div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div>';
+    document.body.appendChild(spinner);
+  }
+
+  function hideSpinner() {
+    const spinner = document.getElementById('global-spinner');
+    if (spinner) spinner.remove();
+  }
+
+  function closeCreateUserModal() {
+    const el = document.getElementById('createUserModal');
+    if (!el) return Promise.resolve();
+    const instance = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+    return new Promise((resolve) => {
+      el.addEventListener('hidden.bs.modal', resolve, { once: true });
+      instance.hide();
+    });
+  }
+
+  document.addEventListener('submit', (e) => {
+    if (e.target.id === 'createUserForm') {
+      e.preventDefault();
+      
+      const name = document.getElementById('NameCreation')?.value || '';
+      const email = document.getElementById('EmailCreation')?.value || '';
+      const username = document.getElementById('UserNameCreation')?.value || '';
+      const password = document.getElementById('PasswordCreation')?.value || '';
+      const birthYear = document.getElementById('user-birthyear-select')?.value || '';
+      const birthMonth = document.getElementById('user-birthmonth-select')?.value || '';
+      const birthDay = document.getElementById('user-birthday-select')?.value || '';
+
+      showSpinner();
+      $.ajax({
+        url: 'http://localhost:3000/api/users/create',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ name, email, username, password, birthYear, birthMonth, birthDay })
+      })
+      .done((response) => {
+        console.log('User creation success:', response);
+        if (response.success) {
+          alert(`Account created successfully for ${username}!`);
+          closeCreateUserModal();
+        } else {
+          alert(response.message || 'User creation failed. Please try again.');
+        }
+      })
+      .fail((xhr, status, error) => {
+        console.error('User creation failed:', status, error);
+        if (xhr.status === 401) {
+          alert('Authentication failed. Please check your credentials.');
+        } else {
+          alert('User creation failed due to a server error or no response. Please try again.');
+        }
+      })
+      .always(hideSpinner);
+    }
+  });
+
+})();
