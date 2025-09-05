@@ -1,9 +1,16 @@
 const userService = require('../Model/services/userService');
+const sessionService = require('../Model/services/sessionService');
 
 async function authenticateUser(req, res) {
     try {
         const user = await userService.getUser(req.body.username);
         if (user && user.password === req.body.password) {
+            const session = await sessionService.createSession(user.username);
+            res.cookie('sessionId', session.sessionId, {
+                httpOnly: false,        // optional, but recommended
+                sameSite: 'lax',
+                path: '/',             // so it’s sent to /api/posts
+                });
             res.status(200).json({ success: true, message: 'Authentication successful' });
         } else {
             res.status(401).json({ success: true, message: 'Authentication failed' });

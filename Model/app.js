@@ -4,6 +4,9 @@ const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const followRoutes = require('./routes/followRoutes');
 
+const cookieParser = require('cookie-parser');
+
+
 const connectDB = require('./db');
 const cors = require('cors');
 
@@ -15,6 +18,7 @@ app.use(cors({
 }));
 
 connectDB().then(() => {
+    app.use(cookieParser());
     app.use('/api/users', userRoutes);
     app.use('/api/posts', postRoutes);
     app.use('/api/follows', followRoutes);
