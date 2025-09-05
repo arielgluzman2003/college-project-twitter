@@ -1,9 +1,91 @@
-// X (Twitter) Platform Clone - JavaScript
+// X (Twitter) Platform Clone - JavaScript with MongoDB Integration
+
+class APIService {
+    constructor() {
+        this.baseURL = 'http://localhost:3000/api';
+    }
+
+    // User API methods
+    async createUser(userData) {
+        const response = await fetch(`${this.baseURL}/users/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        });
+        return response.json();
+    }
+
+    async authenticateUser(username, password) {
+        const response = await fetch(`${this.baseURL}/users/authenticate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+        });
+        return response.json();
+    }
+
+    async getUser(username) {
+        const response = await fetch(`${this.baseURL}/users/${username}`);
+        return response.json();
+    }
+
+    // Post API methods
+    async createPost(postData) {
+        const response = await fetch(`${this.baseURL}/posts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(postData)
+        });
+        return response.json();
+    }
+
+    async getFeedPosts(username) {
+        const response = await fetch(`${this.baseURL}/posts/${username}`);
+        return response.json();
+    }
+
+    // Follow API methods
+    async followUser(followingUser, followedUser) {
+        const response = await fetch(`${this.baseURL}/follows`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ followingUser, followedUser })
+        });
+        return response.json();
+    }
+
+    async unfollowUser(followingUser, followedUser) {
+        const response = await fetch(`${this.baseURL}/follows`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ followingUser, followedUser })
+        });
+        return response.json();
+    }
+
+    async getFollowedUsers(username) {
+        const response = await fetch(`${this.baseURL}/follows/${username}`);
+        return response.json();
+    }
+}
 
 class XFeedManager {
     constructor() {
+        this.apiService = new APIService();
         this.currentUser = null;
         this.posts = [];
+        this.followedUsers = [];
+        this.likes = new Map(); // Store user likes
         this.currentPage = 1;
         this.isLoading = false;
         this.characterLimit = 280;
@@ -38,14 +120,22 @@ class XFeedManager {
     // Load current user data
     async loadCurrentUser() {
         try {
-            // Mock data for demonstration
-            this.currentUser = {
-                id: 'user-1',
-                name: 'John Doe',
-                username: 'johndoe',
-                email: 'john.doe@university.edu',
-                avatar: 'https://via.placeholder.com/48/1DA1F2/ffffff?text=JD'
-            };
+            // Check if user is logged in (from localStorage or session)
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                this.currentUser = JSON.parse(savedUser);
+                console.log('Loaded user from storage:', this.currentUser);
+            } else {
+                // For demo purposes, create a default user or redirect to login
+                this.currentUser = {
+                    _id: 'demo-user-id',
+                    username: 'demo_user',
+                    name: 'Demo User',
+                    email: 'demo@example.com',
+                    avatar: 'https://via.placeholder.com/48/1DA1F2/ffffff?text=DU'
+                };
+                console.log('Using demo user:', this.currentUser);
+            }
         } catch (error) {
             console.error('Error loading user:', error);
             throw error;
@@ -433,24 +523,74 @@ class XFeedManager {
         try {
             this.setLoadingState(true);
             
-            // Mock post creation
-            const newPost = {
-                id: `post-${Date.now()}`,
-                content: content,
-                author: this.currentUser,
-                createdAt: new Date().toISOString(),
-                media: mediaFile ? URL.createObjectURL(mediaFile) : null,
-                mediaType: mediaFile ? mediaFile.type.startsWith('image/') ? 'image' : 'video' : null,
-                likes: 0,
-                retweets: 0,
-                replies: 0,
-                views: 0,
-                isLiked: false,
-                isRetweeted: false
+            // Prepare post data according to database schema
+            const postData = {
+                username: this.currentUser.username,
+                textContent: content,
+                date: new Date()
             };
 
-            this.posts.unshift(newPost);
-            this.renderPosts();
+            // Handle visual content if media file is provided
+            if (mediaFile) {
+                // For now, we'll store the file as a data URL
+                // In production, you'd upload to a file storage service
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const visualContentData = {
+                        content: e.target.result, // Data URL
+                        mimeType: mediaFile.type,
+                        mediaType: mediaFile.type.startsWith('image/') ? 'image' : 
+                                  mediaFile.type.startsWith('video/') ? 'video' : 'other',
+                        fileName: mediaFile.name,
+                        fileSizeBytes: mediaFile.size
+                    };
+                    
+                    // Create visual content first, then create post
+                    try {
+                        const visualContentResponse = await fetch(`${this.apiService.baseURL}/visual-content`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(visualContentData)
+                        });
+                        
+                        if (visualContentResponse.ok) {
+                            const visualContent = await visualContentResponse.json();
+                            postData.visualContent = visualContent._id;
+                        }
+                        
+                        // Create the post
+                        await this.createPostWithData(postData);
+                    } catch (error) {
+                        console.error('Error creating visual content:', error);
+                        // Create post without visual content
+                        await this.createPostWithData(postData);
+                    }
+                };
+                reader.readAsDataURL(mediaFile);
+            } else {
+                // Create post without visual content
+                await this.createPostWithData(postData);
+            }
+            
+        } catch (error) {
+            console.error('Error creating post:', error);
+            this.showError('Failed to create post. Please try again.');
+        } finally {
+            this.setLoadingState(false);
+        }
+    }
+
+    // Helper method to create post with data
+    async createPostWithData(postData) {
+        try {
+            const response = await this.apiService.createPost(postData);
+            
+            if (response.error) {
+                throw new Error(response.error);
+            }
+            
+            // Reload posts to show the new one
+            await this.loadPosts();
             
             // Reset form
             document.getElementById('post-content').value = '';
@@ -463,8 +603,6 @@ class XFeedManager {
         } catch (error) {
             console.error('Error creating post:', error);
             this.showError('Failed to create post. Please try again.');
-        } finally {
-            this.setLoadingState(false);
         }
     }
 
@@ -498,13 +636,35 @@ class XFeedManager {
     }
 
     // Handle follow button
-    handleFollow(button) {
+    async handleFollow(button) {
         const isFollowing = button.textContent === 'Following';
-        button.textContent = isFollowing ? 'Follow' : 'Following';
-        button.style.backgroundColor = isFollowing ? '#E7E9EA' : '#000000';
-        button.style.color = isFollowing ? '#000000' : '#FFFFFF';
+        const username = button.dataset.username;
         
-        this.showSuccess(isFollowing ? 'Unfollowed user' : 'Followed user');
+        if (!username) {
+            console.error('No username found for follow button');
+            return;
+        }
+
+        try {
+            if (isFollowing) {
+                // Unfollow user
+                await this.apiService.unfollowUser(this.currentUser.username, username);
+                button.textContent = 'Follow';
+                button.style.backgroundColor = '#E7E9EA';
+                button.style.color = '#000000';
+                this.showSuccess('Unfollowed user');
+            } else {
+                // Follow user
+                await this.apiService.followUser(this.currentUser.username, username);
+                button.textContent = 'Following';
+                button.style.backgroundColor = '#000000';
+                button.style.color = '#FFFFFF';
+                this.showSuccess('Followed user');
+            }
+        } catch (error) {
+            console.error('Error handling follow:', error);
+            this.showError('Failed to update follow status. Please try again.');
+        }
     }
 
     // Load posts from API
@@ -512,71 +672,133 @@ class XFeedManager {
         try {
             this.setLoadingState(true);
             
-            // Mock data for demonstration
-            const mockPosts = [
-                {
-                    id: 'post-1',
-                    content: 'Just finished my research paper on machine learning algorithms! The results are promising and I can\'t wait to share them with the academic community. #MachineLearning #Research #AI',
-                    author: { 
-                        id: 'user-2', 
-                        name: 'Jane Smith', 
-                        username: 'janesmith',
-                        avatar: 'https://via.placeholder.com/48/28a745/ffffff?text=JS' 
-                    },
-                    createdAt: new Date(Date.now() - 3600000).toISOString(),
-                    media: null,
-                    mediaType: null,
-                    likes: 15,
-                    retweets: 8,
-                    replies: 12,
-                    views: 1250,
-                    isLiked: false,
-                    isRetweeted: false
-                },
-                {
-                    id: 'post-2',
-                    content: 'Check out this amazing visualization of our data analysis! The patterns we discovered are incredible.',
-                    author: { 
-                        id: 'user-3', 
-                        name: 'Bob Wilson', 
-                        username: 'bobwilson',
-                        avatar: 'https://via.placeholder.com/48/dc3545/ffffff?text=BW' 
-                    },
-                    createdAt: new Date(Date.now() - 7200000).toISOString(),
-                    media: 'https://via.placeholder.com/600/400/1DA1F2?text=Data+Visualization',
-                    mediaType: 'image',
-                    likes: 23,
-                    retweets: 12,
-                    replies: 8,
-                    views: 2100,
-                    isLiked: false,
-                    isRetweeted: false
-                },
-                {
-                    id: 'post-3',
-                    content: 'Here\'s a quick tutorial on implementing neural networks from scratch. Hope this helps someone out there! #NeuralNetworks #Tutorial #Coding',
-                    author: this.currentUser,
-                    createdAt: new Date(Date.now() - 10800000).toISOString(),
-                    media: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-                    mediaType: 'video',
-                    likes: 45,
-                    retweets: 20,
-                    replies: 15,
-                    views: 3400,
-                    isLiked: true,
-                    isRetweeted: false
-                }
-            ];
-
-            this.posts = [...this.posts, ...mockPosts];
+            // Get posts from followed users
+            const response = await this.apiService.getFeedPosts(this.currentUser.username);
+            
+            if (response.error) {
+                throw new Error(response.error);
+            }
+            
+            // Transform database posts to frontend format
+            this.posts = await this.transformPostsForDisplay(response);
             this.renderPosts();
             
         } catch (error) {
             console.error('Error loading posts:', error);
             this.showError('Failed to load posts');
+            
+            // Fallback to mock data for demonstration
+            this.loadMockPosts();
         } finally {
             this.setLoadingState(false);
         }
+    }
+
+    // Transform database posts to frontend display format
+    async transformPostsForDisplay(dbPosts) {
+        const transformedPosts = [];
+        
+        for (const post of dbPosts) {
+            try {
+                // Get user information for the post author
+                const userResponse = await this.apiService.getUser(post.username);
+                const author = userResponse.error ? 
+                    { name: post.username, username: post.username, avatar: 'https://via.placeholder.com/48/1DA1F2/ffffff?text=' + post.username.charAt(0).toUpperCase() } :
+                    userResponse;
+
+                // Get visual content if exists
+                let media = null;
+                let mediaType = null;
+                if (post.visualContent) {
+                    try {
+                        const visualResponse = await fetch(`${this.apiService.baseURL}/visual-content/${post.visualContent}`);
+                        if (visualResponse.ok) {
+                            const visualContent = await visualResponse.json();
+                            media = visualContent.content;
+                            mediaType = visualContent.mediaType;
+                        }
+                    } catch (error) {
+                        console.error('Error loading visual content:', error);
+                    }
+                }
+
+                // Check if current user liked this post
+                const isLiked = this.likes.has(post._id);
+
+                const transformedPost = {
+                    id: post._id,
+                    content: post.textContent,
+                    author: {
+                        id: author._id || author.username,
+                        name: author.name || author.username,
+                        username: author.username,
+                        avatar: author.avatar || `https://via.placeholder.com/48/1DA1F2/ffffff?text=${author.username.charAt(0).toUpperCase()}`
+                    },
+                    createdAt: post.date,
+                    media: media,
+                    mediaType: mediaType,
+                    likes: 0, // TODO: Implement like counting
+                    retweets: 0, // TODO: Implement retweet counting
+                    replies: 0, // TODO: Implement reply counting
+                    views: 0, // TODO: Implement view counting
+                    isLiked: isLiked,
+                    isRetweeted: false // TODO: Implement retweet tracking
+                };
+
+                transformedPosts.push(transformedPost);
+            } catch (error) {
+                console.error('Error transforming post:', error);
+            }
+        }
+
+        return transformedPosts;
+    }
+
+    // Fallback mock posts for demonstration
+    loadMockPosts() {
+        const mockPosts = [
+            {
+                id: 'post-1',
+                content: 'Just finished my research paper on machine learning algorithms! The results are promising and I can\'t wait to share them with the academic community. #MachineLearning #Research #AI',
+                author: { 
+                    id: 'user-2', 
+                    name: 'Jane Smith', 
+                    username: 'janesmith',
+                    avatar: 'https://via.placeholder.com/48/28a745/ffffff?text=JS' 
+                },
+                createdAt: new Date(Date.now() - 3600000).toISOString(),
+                media: null,
+                mediaType: null,
+                likes: 15,
+                retweets: 8,
+                replies: 12,
+                views: 1250,
+                isLiked: false,
+                isRetweeted: false
+            },
+            {
+                id: 'post-2',
+                content: 'Check out this amazing visualization of our data analysis! The patterns we discovered are incredible.',
+                author: { 
+                    id: 'user-3', 
+                    name: 'Bob Wilson', 
+                    username: 'bobwilson',
+                    avatar: 'https://via.placeholder.com/48/dc3545/ffffff?text=BW' 
+                },
+                createdAt: new Date(Date.now() - 7200000).toISOString(),
+                media: 'https://via.placeholder.com/600/400/1DA1F2?text=Data+Visualization',
+                mediaType: 'image',
+                likes: 23,
+                retweets: 12,
+                replies: 8,
+                views: 2100,
+                isLiked: false,
+                isRetweeted: false
+            }
+        ];
+
+        this.posts = mockPosts;
+        this.renderPosts();
     }
 
     // Render posts to DOM
@@ -675,13 +897,72 @@ class XFeedManager {
         }
     }
 
-    handleLike(postId) {
+    async handleLike(postId) {
         const post = this.posts.find(p => p.id === postId);
-        if (post) {
-            post.isLiked = !post.isLiked;
-            post.likes += post.isLiked ? 1 : -1;
+        if (!post) return;
+
+        try {
+            const isCurrentlyLiked = this.likes.has(postId);
+            
+            if (isCurrentlyLiked) {
+                // Unlike the post
+                await this.unlikePost(postId);
+                this.likes.delete(postId);
+                post.isLiked = false;
+                post.likes = Math.max(0, post.likes - 1);
+            } else {
+                // Like the post
+                await this.likePost(postId);
+                this.likes.set(postId, true);
+                post.isLiked = true;
+                post.likes += 1;
+            }
+            
             this.renderPosts();
+        } catch (error) {
+            console.error('Error handling like:', error);
+            this.showError('Failed to update like. Please try again.');
         }
+    }
+
+    // Like a post
+    async likePost(postId) {
+        const response = await fetch(`${this.apiService.baseURL}/likes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: this.currentUser._id || this.currentUser.id,
+                postId: postId
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to like post');
+        }
+        
+        return response.json();
+    }
+
+    // Unlike a post
+    async unlikePost(postId) {
+        const response = await fetch(`${this.apiService.baseURL}/likes`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: this.currentUser._id || this.currentUser.id,
+                postId: postId
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to unlike post');
+        }
+        
+        return response.json();
     }
 
     handleShare(postId) {
