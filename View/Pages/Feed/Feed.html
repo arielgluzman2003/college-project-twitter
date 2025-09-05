@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X / Twitter Clone</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="Feed.css">
+    
+    <!-- Custom Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="x-container">
+        <!-- Left Sidebar -->
+        <aside class="x-sidebar left-sidebar">
+            <div class="sidebar-content">
+                <!-- X Logo -->
+                <div class="x-logo">
+                    <i class="fab fa-x-twitter"></i>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="x-nav">
+                    <a href="#" class="nav-item active" data-section="home">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="explore">
+                        <i class="fas fa-search"></i>
+                        <span>Explore</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messages</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-list"></i>
+                        <span>Lists</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Bookmarks</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Communities</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fab fa-x-twitter"></i>
+                        <span>Premium</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-ellipsis-h"></i>
+                        <span>More</span>
+                    </a>
+                </nav>
+                
+                <!-- Post Button -->
+                <button class="x-post-btn">
+                    <span>Post</span>
+                </button>
+                
+                <!-- User Profile -->
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/40/1DA1F2/ffffff?text=JD" alt="Profile" class="profile-avatar">
+                    <div class="profile-info">
+                        <div class="profile-name">John Doe</div>
+                        <div class="profile-handle">@johndoe</div>
+                    </div>
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="x-main">
+            <!-- Home Section -->
+            <section id="home-section" class="content-section active">
+                <!-- Header -->
+                <header class="x-header">
+                    <div class="header-content">
+                        <h1>Home</h1>
+                        <div class="header-tabs">
+                            <button class="tab-btn active">For you</button>
+                            <button class="tab-btn">Following</button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Create Post Section -->
+                <div class="post-composer">
+                    <div class="composer-content">
+                        <img src="https://via.placeholder.com/48/1DA1F2/ffffff?text=JD" alt="Profile" class="composer-avatar">
+                        <div class="composer-input">
+                            <textarea placeholder="What's happening?" id="post-content"></textarea>
+                            <div class="composer-actions">
+                                <div class="action-buttons">
+                                    <button class="action-btn" id="media-btn">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-poll-h"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-smile"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-calendar"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </button>
+                                </div>
+                                <button class="post-submit-btn" id="post-submit-btn" disabled>
+                                    Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" id="media-input" accept="image/*,video/*" style="display: none;">
+                </div>
+
+                <!-- Posts Feed -->
+                <div class="posts-feed" id="posts-container">
+                    <!-- Posts will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Explore Section -->
+            <section id="explore-section" class="content-section">
+                <!-- Explore Header -->
+                <header class="x-header">
+                    <div class="header-content">
+                        <div class="explore-search-container">
+                            <div class="explore-search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search" id="explore-search-input">
+                            </div>
+                        </div>
+                        <div class="explore-tabs">
+                            <button class="explore-tab-btn active" data-category="for-you">For you</button>
+                            <button class="explore-tab-btn" data-category="trending">Trending</button>
+                            <button class="explore-tab-btn" data-category="news">News</button>
+                            <button class="explore-tab-btn" data-category="sports">Sports</button>
+                            <button class="explore-tab-btn" data-category="entertainment">Entertainment</button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Explore Content -->
+                <div class="explore-content">
+                    <!-- For You Content -->
+                    <div id="for-you-content" class="explore-category-content active">
+                        <div class="today-news">
+                            <h3>Today's News</h3>
+                            <div class="news-item">
+                                <div class="news-category">Technology</div>
+                                <div class="news-title">AI Breakthrough in Machine Learning Research</div>
+                                <div class="news-stats">2.5K posts</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-category">Science</div>
+                                <div class="news-title">New Discovery in Quantum Computing</div>
+                                <div class="news-stats">1.8K posts</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-category">Education</div>
+                                <div class="news-title">Online Learning Platforms See Record Growth</div>
+                                <div class="news-stats">3.2K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trending Content -->
+                    <div id="trending-content" class="explore-category-content">
+                        <div class="trending-posts">
+                            <h3>Trending Now</h3>
+                            <div class="trending-post">
+                                <div class="trending-post-header">
+                                    <span class="trending-post-author">Tech News</span>
+                                    <span class="trending-post-time">2h</span>
+                                </div>
+                                <div class="trending-post-content">#JavaScript remains the most popular programming language in 2024 according to latest developer surveys</div>
+                                <div class="trending-post-stats">15.2K posts</div>
+                            </div>
+                            <div class="trending-post">
+                                <div class="trending-post-header">
+                                    <span class="trending-post-author">Web Dev</span>
+                                    <span class="trending-post-time">4h</span>
+                                </div>
+                                <div class="trending-post-content">React 19 is coming with amazing new features! #React #WebDevelopment</div>
+                                <div class="trending-post-stats">8.7K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- News Content -->
+                    <div id="news-content" class="explore-category-content">
+                        <div class="news-posts">
+                            <h3>Latest News</h3>
+                            <div class="news-post">
+                                <div class="news-post-header">
+                                    <span class="news-post-source">CNN</span>
+                                    <span class="news-post-time">1h</span>
+                                </div>
+                                <div class="news-post-title">Global Tech Summit Announces New AI Regulations</div>
+                                <div class="news-post-excerpt">World leaders gather to discuss the future of artificial intelligence...</div>
+                                <div class="news-post-stats">5.3K posts</div>
+                            </div>
+                            <div class="news-post">
+                                <div class="news-post-header">
+                                    <span class="news-post-source">BBC</span>
+                                    <span class="news-post-time">3h</span>
+                                </div>
+                                <div class="news-post-title">Climate Change Conference Sets New Targets</div>
+                                <div class="news-post-excerpt">International agreement reached on carbon emission reductions...</div>
+                                <div class="news-post-stats">4.1K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sports Content -->
+                    <div id="sports-content" class="explore-category-content">
+                        <div class="sports-posts">
+                            <h3>Sports Updates</h3>
+                            <div class="sports-post">
+                                <div class="sports-post-header">
+                                    <span class="sports-post-league">NBA</span>
+                                    <span class="sports-post-time">30m</span>
+                                </div>
+                                <div class="sports-post-title">Lakers vs Warriors: Final Score 112-108</div>
+                                <div class="sports-post-excerpt">LeBron James leads Lakers to victory with 32 points...</div>
+                                <div class="sports-post-stats">12.8K posts</div>
+                            </div>
+                            <div class="sports-post">
+                                <div class="sports-post-header">
+                                    <span class="sports-post-league">Premier League</span>
+                                    <span class="sports-post-time">2h</span>
+                                </div>
+                                <div class="sports-post-title">Manchester United Signs New Star Player</div>
+                                <div class="sports-post-excerpt">Club announces record-breaking transfer deal...</div>
+                                <div class="sports-post-stats">9.4K posts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entertainment Content -->
+                    <div id="entertainment-content" class="explore-category-content">
+                        <div class="entertainment-posts">
+                            <h3>Entertainment News</h3>
+                            <div class="entertainment-post">
+                                <div class="entertainment-post-header">
+                                    <span class="entertainment-post-source">Hollywood</span>
+                                    <span class="entertainment-post-time">1h</span>
+                                </div>
+                                <div class="entertainment-post-title">New Marvel Movie Breaks Box Office Records</div>
+                                <div class="entertainment-post-excerpt">Latest superhero film earns $200M in opening weekend...</div>
+                                <div class="entertainment-post-stats">18.5K posts</div>
+                            </div>
+                            <div class="entertainment-post">
+                                <div class="entertainment-post-header">
+                                    <span class="entertainment-post-source">Music</span>
+                                    <span class="entertainment-post-time">4h</span>
+                                </div>
+                                <div class="entertainment-post-title">Taylor Swift Announces World Tour 2024</div>
+                                <div class="entertainment-post-excerpt">Global tour to visit 50+ cities across 6 continents...</div>
+                                <div class="entertainment-post-stats">25.7K posts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="x-sidebar right-sidebar">
+            <div class="sidebar-content">
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search" id="search-input">
+                    </div>
+                </div>
+
+                <!-- Weather Widget -->
+                <div class="weather-widget">
+                    <div class="weather-header">
+                        <h3><i class="fas fa-cloud-sun me-2"></i>Weather</h3>
+                        <button class="weather-refresh-btn" id="weather-refresh-btn" title="Refresh weather">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Loading State -->
+                    <div id="weather-loading" class="weather-loading">
+                        <div class="weather-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <p>Loading weather...</p>
+                    </div>
+                    
+                    <!-- Weather Content -->
+                    <div id="weather-content" class="weather-content" style="display: none;">
+                        <div class="weather-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="weather-city">City Name</span>
+                        </div>
+                        
+                        <div class="weather-main">
+                            <div class="weather-icon">
+                                <img id="weather-icon" src="" alt="Weather icon">
+                            </div>
+                            <div class="weather-temp">
+                                <span id="weather-temperature">--</span>°C
+                            </div>
+                        </div>
+                        
+                        <div class="weather-description">
+                            <span id="weather-description">Weather description</span>
+                        </div>
+                        
+                        <div class="weather-details">
+                            <div class="weather-detail">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span>Feels like: <span id="weather-feels-like">--</span>°C</span>
+                            </div>
+                            <div class="weather-detail">
+                                <i class="fas fa-tint"></i>
+                                <span>Humidity: <span id="weather-humidity">--</span>%</span>
+                            </div>
+                            <div class="weather-detail">
+                                <i class="fas fa-wind"></i>
+                                <span>Wind: <span id="weather-wind">--</span> km/h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="weather-updated">
+                            <small>Last updated: <span id="weather-updated-time">--</span></small>
+                        </div>
+                    </div>
+                    
+                    <!-- Error State -->
+                    <div id="weather-error" class="weather-error" style="display: none;">
+                        <div class="weather-error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <p id="weather-error-message">Unable to load weather data</p>
+                        <button class="weather-retry-btn" id="weather-retry-btn">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Trending Section -->
+                <div class="trending-section">
+                    <h3>Trends for you</h3>
+                    <div class="trending-item">
+                        <div class="trending-category">Trending in Technology</div>
+                        <div class="trending-tag">#JavaScript</div>
+                        <div class="trending-count">50.5K posts</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-category">Trending in Science</div>
+                        <div class="trending-tag">#AI</div>
+                        <div class="trending-count">25.2K posts</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-category">Trending in Education</div>
+                        <div class="trending-tag">#Coding</div>
+                        <div class="trending-count">15.8K posts</div>
+                    </div>
+                </div>
+
+                <!-- Who to follow -->
+                <div class="who-to-follow">
+                    <h3>Who to follow</h3>
+                    <div class="follow-suggestion">
+                        <img src="https://via.placeholder.com/40/28a745/ffffff?text=JS" alt="Profile" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">Jane Smith</div>
+                            <div class="suggestion-handle">@janesmith</div>
+                        </div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="follow-suggestion">
+                        <img src="https://via.placeholder.com/40/dc3545/ffffff?text=BW" alt="Profile" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">Bob Wilson</div>
+                            <div class="suggestion-handle">@bobwilson</div>
+                        </div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                </div>
+
+                <!-- Footer Links -->
+                <div class="sidebar-footer">
+                    <div class="footer-links">
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Cookie Policy</a>
+                        <a href="#">Accessibility</a>
+                        <a href="#">Ads info</a>
+                        <a href="#">More</a>
+                    </div>
+                    <div class="copyright">© 2024 X Corp.</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="Feed.js"></script>
+</body>
+</html>
