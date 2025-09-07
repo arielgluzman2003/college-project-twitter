@@ -7,13 +7,13 @@ async function authenticateUser(req, res) {
         if (user && user.password === req.body.password) {
             const session = await sessionService.createSession(user.username);
             res.cookie('sessionId', session.sessionId, {
-                httpOnly: false,        // optional, but recommended
-                sameSite: 'lax',
-                path: '/',             // so it’s sent to /api/posts
-                });
-            res.status(200).json({ success: true, message: 'Authentication successful' });
+                sameSite: 'none',
+                secure: true
+
+            });
+            res.status(200).json({ success: true, message: 'Authentication Successful' });
         } else {
-            res.status(401).json({ success: true, message: 'Authentication failed' });
+            res.status(401).json({ success: false, message: 'Authentication failed' });
     }
     } catch (err) {
         res.status(500).json({ error: err.message });
