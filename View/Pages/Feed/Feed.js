@@ -46,8 +46,10 @@ class APIService {
         return response.json();
     }
 
-    async getFeedPosts(username) {
-        const response = await fetch(`${this.baseURL}/posts/${username}`);
+    async getFeedPosts() {
+        const response = await fetch(`${this.baseURL}/posts`, {
+            method: 'GET',
+            credentials: 'include'});
         return response.json();
     }
 
@@ -674,7 +676,7 @@ class XFeedManager {
             this.setLoadingState(true);
             
             // Get posts from followed users
-            const response = await this.apiService.getFeedPosts(this.currentUser.username);
+            const response = await this.apiService.getFeedPosts();
             
             if (response.error) {
                 throw new Error(response.error);
