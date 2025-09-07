@@ -77,6 +77,84 @@ class APIService {
         const response = await fetch(`${this.baseURL}/follows/${username}`);
         return response.json();
     }
+
+    // Group API methods
+    async createGroup(groupData) {
+        const response = await fetch(`${this.baseURL}/groups`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(groupData)
+        });
+        return response.json();
+    }
+
+    async getAllGroups() {
+        const response = await fetch(`${this.baseURL}/groups`);
+        return response.json();
+    }
+
+    async getGroupById(id) {
+        const response = await fetch(`${this.baseURL}/groups/${id}`);
+        return response.json();
+    }
+
+    async joinGroup(groupId, username) {
+        const response = await fetch(`${this.baseURL}/groups/join`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ groupId, username })
+        });
+        return response.json();
+    }
+
+    async leaveGroup(groupId, username) {
+        const response = await fetch(`${this.baseURL}/groups/leave`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ groupId, username })
+        });
+        return response.json();
+    }
+
+    // Search API methods
+    async searchPosts(query, filters = {}) {
+        const response = await fetch(`${this.baseURL}/posts/search`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query, filters })
+        });
+        return response.json();
+    }
+
+    async searchGroups(query, filters = {}) {
+        const response = await fetch(`${this.baseURL}/groups/search`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query, filters })
+        });
+        return response.json();
+    }
+
+    // Statistics API methods
+    async getPostStats() {
+        const response = await fetch(`${this.baseURL}/posts/stats`);
+        return response.json();
+    }
+
+    async getGroupStats() {
+        const response = await fetch(`${this.baseURL}/groups/stats`);
+        return response.json();
+    }
 }
 
 class XFeedManager {
@@ -94,8 +172,8 @@ class XFeedManager {
         
         // Weather Widget Configuration
         this.weatherConfig = {
-            apiKey: 'YOUR_OPENWEATHERMAP_API_KEY', // TODO: Replace with actual API key
-            city: 'London', // TODO: Replace with desired city name
+            apiKey: 'e5c0b5f0ed680b3c0c57f799ba8e7fc5', // OpenWeatherMap API key
+            city: 'London', // Default city - can be changed
             refreshInterval: 10 * 60 * 1000, // 10 minutes in milliseconds
             units: 'metric' // metric, imperial, or kelvin
         };
@@ -216,13 +294,41 @@ class XFeedManager {
         if (weatherRetryBtn) {
             weatherRetryBtn.addEventListener('click', () => this.refreshWeather());
         }
+
+        // Profile page event listeners
+        const profileBackBtn = document.getElementById('profile-back-btn');
+        const editProfileBtn = document.getElementById('edit-profile-btn');
+        const editCoverBtn = document.getElementById('edit-cover-btn');
+        const editAvatarBtn = document.getElementById('edit-avatar-btn');
+        
+        if (profileBackBtn) {
+            profileBackBtn.addEventListener('click', () => this.switchSection('home'));
+        }
+        
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', () => this.handleEditProfile());
+        }
+        
+        if (editCoverBtn) {
+            editCoverBtn.addEventListener('click', () => this.handleEditCover());
+        }
+        
+        if (editAvatarBtn) {
+            editAvatarBtn.addEventListener('click', () => this.handleEditAvatar());
+        }
+
+        // Profile tab switching
+        const profileTabBtns = document.querySelectorAll('.profile-tab-btn');
+        profileTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => this.switchProfileTab(btn));
+        });
     }
 
     // Initialize Weather Widget
     initWeatherWidget() {
-        // Check if weather widget exists
-        if (!document.getElementById('weather-widget')) {
-            console.warn('Weather widget not found in DOM');
+        // Check if weather section exists in explore
+        if (!document.getElementById('weather-content')) {
+            console.warn('Weather section not found in explore page');
             return;
         }
 
@@ -259,11 +365,25 @@ class XFeedManager {
                 throw new Error('OpenWeatherMap API key not configured. Please add your API key in the weatherConfig object.');
             }
 
-            // Build API URL
-            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(this.weatherConfig.city)}&appid=${this.weatherConfig.apiKey}&units=${this.weatherConfig.units}`;
+            // First, get coordinates for the city using Geocoding API
+            const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(this.weatherConfig.city)}&limit=1&appid=${this.weatherConfig.apiKey}`;
+            
+            const geocodeResponse = await fetch(geocodeUrl);
+            if (!geocodeResponse.ok) {
+                throw new Error(`Geocoding failed: ${geocodeResponse.status}`);
+            }
 
-            // Fetch weather data
-            const response = await fetch(apiUrl);
+            const geocodeData = await geocodeResponse.json();
+            if (!geocodeData || geocodeData.length === 0) {
+                throw new Error('City not found');
+            }
+
+            const { lat, lon } = geocodeData[0];
+
+            // Now get weather data using One Call API 3.0
+            const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&appid=${this.weatherConfig.apiKey}&units=${this.weatherConfig.units}`;
+
+            const response = await fetch(weatherUrl);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -291,15 +411,16 @@ class XFeedManager {
     // Update weather widget with API data
     updateWeatherWidget(weatherData) {
         try {
-            // Extract weather information
-            const cityName = weatherData.name;
-            const country = weatherData.sys?.country;
-            const temperature = Math.round(weatherData.main?.temp);
-            const feelsLike = Math.round(weatherData.main?.feels_like);
-            const humidity = weatherData.main?.humidity;
-            const windSpeed = Math.round(weatherData.wind?.speed * 3.6); // Convert m/s to km/h
-            const description = weatherData.weather?.[0]?.description;
-            const iconCode = weatherData.weather?.[0]?.icon;
+            // Extract weather information from One Call API 3.0 response
+            const current = weatherData.current;
+            const cityName = this.weatherConfig.city; // Use the configured city name
+            const temperature = Math.round(current?.temp);
+            const feelsLike = Math.round(current?.feels_like);
+            const humidity = current?.humidity;
+            const windSpeed = Math.round(current?.wind_speed * 3.6); // Convert m/s to km/h
+            const visibility = Math.round((current?.visibility || 0) / 1000); // Convert m to km
+            const description = current?.weather?.[0]?.description;
+            const iconCode = current?.weather?.[0]?.icon;
 
             // Update DOM elements
             const cityElement = document.getElementById('weather-city');
@@ -307,14 +428,16 @@ class XFeedManager {
             const feelsLikeElement = document.getElementById('weather-feels-like');
             const humidityElement = document.getElementById('weather-humidity');
             const windElement = document.getElementById('weather-wind');
+            const visibilityElement = document.getElementById('weather-visibility');
             const descriptionElement = document.getElementById('weather-description');
             const iconElement = document.getElementById('weather-icon');
 
-            if (cityElement) cityElement.textContent = `${cityName}${country ? `, ${country}` : ''}`;
+            if (cityElement) cityElement.textContent = cityName;
             if (tempElement) tempElement.textContent = temperature || '--';
             if (feelsLikeElement) feelsLikeElement.textContent = feelsLike || '--';
             if (humidityElement) humidityElement.textContent = humidity || '--';
             if (windElement) windElement.textContent = windSpeed || '--';
+            if (visibilityElement) visibilityElement.textContent = visibility || '--';
             if (descriptionElement) descriptionElement.textContent = description || 'Weather description';
 
             // Update weather icon
@@ -324,6 +447,9 @@ class XFeedManager {
                 iconElement.alt = description || 'Weather icon';
             }
 
+            // Update forecast data if available
+            this.updateForecast(weatherData.daily);
+
             // Show weather content
             this.showWeatherContent();
 
@@ -331,6 +457,45 @@ class XFeedManager {
             console.error('Error updating weather widget:', error);
             this.showWeatherError('Failed to update weather display');
         }
+    }
+
+    // Update forecast data
+    updateForecast(dailyData) {
+        if (!dailyData || dailyData.length === 0) return;
+
+        const forecastItems = document.querySelectorAll('.forecast-item');
+        const days = ['Today', 'Tomorrow', 'Wed', 'Thu', 'Fri'];
+
+        forecastItems.forEach((item, index) => {
+            if (index < dailyData.length && index < 5) {
+                const dayData = dailyData[index];
+                const dayElement = item.querySelector('.forecast-day');
+                const tempElement = item.querySelector('.forecast-temp');
+                const iconElement = item.querySelector('.forecast-icon');
+
+                if (dayElement) {
+                    if (index === 0) {
+                        dayElement.textContent = 'Today';
+                    } else if (index === 1) {
+                        dayElement.textContent = 'Tomorrow';
+                    } else {
+                        const date = new Date(dayData.dt * 1000);
+                        dayElement.textContent = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    }
+                }
+
+                if (tempElement) {
+                    const temp = Math.round(dayData.temp.day);
+                    tempElement.textContent = `${temp}°C`;
+                }
+
+                if (iconElement) {
+                    const iconCode = dayData.weather[0].icon;
+                    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                    iconElement.innerHTML = `<img src="${iconUrl}" alt="${dayData.weather[0].description}" style="width: 24px; height: 24px;">`;
+                }
+            }
+        });
     }
 
     // Update weather timestamp
@@ -345,7 +510,7 @@ class XFeedManager {
     // Show weather loading state
     showWeatherLoading() {
         const loadingElement = document.getElementById('weather-loading');
-        const contentElement = document.getElementById('weather-content');
+        const contentElement = document.getElementById('weather-display');
         const errorElement = document.getElementById('weather-error');
 
         if (loadingElement) loadingElement.style.display = 'block';
@@ -356,7 +521,7 @@ class XFeedManager {
     // Show weather content
     showWeatherContent() {
         const loadingElement = document.getElementById('weather-loading');
-        const contentElement = document.getElementById('weather-content');
+        const contentElement = document.getElementById('weather-display');
         const errorElement = document.getElementById('weather-error');
 
         if (loadingElement) loadingElement.style.display = 'none';
@@ -367,7 +532,7 @@ class XFeedManager {
     // Show weather error state
     showWeatherError(message) {
         const loadingElement = document.getElementById('weather-loading');
-        const contentElement = document.getElementById('weather-content');
+        const contentElement = document.getElementById('weather-display');
         const errorElement = document.getElementById('weather-error');
         const errorMessageElement = document.getElementById('weather-error-message');
 
@@ -383,7 +548,7 @@ class XFeedManager {
         this.loadWeatherData();
     }
 
-    // Switch between main sections (Home/Explore)
+    // Switch between main sections (Home/Explore/Profile)
     switchSection(section) {
         // Update navigation
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -399,10 +564,9 @@ class XFeedManager {
 
         this.currentSection = section;
 
-        // Update header title
-        const headerTitle = document.querySelector('.x-header h1');
-        if (headerTitle) {
-            headerTitle.textContent = section === 'home' ? 'Home' : 'Explore';
+        // Handle section-specific logic
+        if (section === 'profile') {
+            this.loadProfileData();
         }
 
         // Show success message
@@ -422,6 +586,11 @@ class XFeedManager {
             content.classList.remove('active');
         });
         document.getElementById(`${category}-content`).classList.add('active');
+
+        // Initialize weather widget if weather tab is selected
+        if (category === 'weather') {
+            this.initWeatherWidget();
+        }
 
         this.showSuccess(`Switched to ${category.replace('-', ' ')} category`);
     }
@@ -1087,6 +1256,209 @@ class XFeedManager {
         setTimeout(() => {
             messageDiv.remove();
         }, 3000);
+    }
+
+    // Profile page methods
+    async loadProfileData() {
+        try {
+            if (!this.currentUser) {
+                throw new Error('No current user found');
+            }
+
+            // Load user profile data
+            const userData = await this.apiService.getUser(this.currentUser.username);
+            if (userData.error) {
+                throw new Error(userData.error);
+            }
+
+            // Update profile display
+            this.updateProfileDisplay(userData);
+            
+            // Load user's posts
+            await this.loadUserPosts(this.currentUser.username);
+            
+        } catch (error) {
+            console.error('Error loading profile data:', error);
+            this.showError('Failed to load profile data');
+        }
+    }
+
+    updateProfileDisplay(userData) {
+        // Update profile header
+        const displayName = document.getElementById('profile-display-name');
+        const postCount = document.getElementById('profile-post-count');
+        
+        if (displayName) displayName.textContent = userData.name || userData.username;
+        if (postCount) postCount.textContent = '1,234 posts'; // TODO: Get actual post count
+
+        // Update profile details
+        const profileName = document.getElementById('profile-name');
+        const profileUsername = document.getElementById('profile-username');
+        const profileBio = document.getElementById('profile-bio');
+        const profileLocation = document.getElementById('profile-location');
+        const profileWebsite = document.getElementById('profile-website');
+        const profileJoinDate = document.getElementById('profile-join-date');
+        const profileFollowingCount = document.getElementById('profile-following-count');
+        const profileFollowersCount = document.getElementById('profile-followers-count');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileCoverPhoto = document.getElementById('profile-cover-photo');
+
+        if (profileName) profileName.textContent = userData.name || userData.username;
+        if (profileUsername) profileUsername.textContent = `@${userData.username}`;
+        if (profileBio) profileBio.textContent = userData.bio || 'No bio available';
+        if (profileLocation) profileLocation.textContent = userData.location || 'No location set';
+        if (profileWebsite) {
+            profileWebsite.textContent = userData.website || 'No website';
+            profileWebsite.href = userData.website || '#';
+        }
+        if (profileJoinDate) {
+            const joinDate = userData.joinedDate ? new Date(userData.joinedDate) : new Date();
+            profileJoinDate.textContent = `Joined ${joinDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+        }
+        if (profileFollowingCount) profileFollowingCount.textContent = '1,234'; // TODO: Get actual count
+        if (profileFollowersCount) profileFollowersCount.textContent = '5,678'; // TODO: Get actual count
+        if (profileAvatar) profileAvatar.src = userData.avatar || `https://via.placeholder.com/120/1DA1F2/ffffff?text=${userData.username.charAt(0).toUpperCase()}`;
+        if (profileCoverPhoto) profileCoverPhoto.src = userData.coverPhoto || 'https://via.placeholder.com/600x200/1DA1F2/ffffff?text=Cover+Photo';
+    }
+
+    async loadUserPosts(username) {
+        try {
+            const response = await this.apiService.getFeedPosts(username);
+            if (response.error) {
+                throw new Error(response.error);
+            }
+
+            // Transform and display user's posts
+            const userPosts = await this.transformPostsForDisplay(response);
+            this.renderProfilePosts(userPosts);
+            
+        } catch (error) {
+            console.error('Error loading user posts:', error);
+            this.showError('Failed to load user posts');
+        }
+    }
+
+    renderProfilePosts(posts) {
+        const container = document.getElementById('profile-posts-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (posts.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-feather-alt"></i>
+                    <h3>No posts yet</h3>
+                    <p>When you post something, it will show up here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        posts.forEach(post => {
+            const postElement = this.createPostElement(post);
+            container.appendChild(postElement);
+        });
+    }
+
+    switchProfileTab(clickedTab) {
+        // Update tab buttons
+        document.querySelectorAll('.profile-tab-btn').forEach(tab => tab.classList.remove('active'));
+        clickedTab.classList.add('active');
+
+        const tab = clickedTab.dataset.tab;
+        
+        // Update content
+        document.querySelectorAll('.profile-tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`profile-${tab}`).classList.add('active');
+
+        // Load content based on tab
+        switch (tab) {
+            case 'posts':
+                this.loadUserPosts(this.currentUser.username);
+                break;
+            case 'replies':
+                // TODO: Load replies
+                break;
+            case 'media':
+                this.loadUserMedia(this.currentUser.username);
+                break;
+            case 'likes':
+                // TODO: Load liked posts
+                break;
+        }
+    }
+
+    async loadUserMedia(username) {
+        try {
+            // Get user's posts with media
+            const response = await this.apiService.getFeedPosts(username);
+            if (response.error) {
+                throw new Error(response.error);
+            }
+
+            const mediaGrid = document.getElementById('profile-media-grid');
+            if (!mediaGrid) return;
+
+            mediaGrid.innerHTML = '';
+
+            // Filter posts with media
+            const postsWithMedia = response.filter(post => post.visualContent);
+            
+            if (postsWithMedia.length === 0) {
+                mediaGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-images"></i>
+                        <h3>No media yet</h3>
+                        <p>When you post photos or videos, they will show up here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Display media items
+            for (const post of postsWithMedia) {
+                try {
+                    const visualResponse = await fetch(`${this.apiService.baseURL}/visual-content/${post.visualContent}`);
+                    if (visualResponse.ok) {
+                        const visualContent = await visualResponse.json();
+                        const mediaItem = document.createElement('div');
+                        mediaItem.className = 'media-item';
+                        
+                        if (visualContent.mediaType === 'image') {
+                            mediaItem.innerHTML = `<img src="${visualContent.content}" alt="Media">`;
+                        } else if (visualContent.mediaType === 'video') {
+                            mediaItem.innerHTML = `<video><source src="${visualContent.content}" type="${visualContent.mimeType}"></video>`;
+                        }
+                        
+                        mediaGrid.appendChild(mediaItem);
+                    }
+                } catch (error) {
+                    console.error('Error loading media item:', error);
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error loading user media:', error);
+            this.showError('Failed to load media');
+        }
+    }
+
+    handleEditProfile() {
+        // TODO: Implement profile editing modal
+        this.showSuccess('Profile editing feature coming soon!');
+    }
+
+    handleEditCover() {
+        // TODO: Implement cover photo editing
+        this.showSuccess('Cover photo editing feature coming soon!');
+    }
+
+    handleEditAvatar() {
+        // TODO: Implement avatar editing
+        this.showSuccess('Avatar editing feature coming soon!');
     }
 
     // Cleanup method for weather timer
