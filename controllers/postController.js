@@ -45,8 +45,9 @@ async function createPost(req, res) {
         if (sessionExpiryDate < new Date()) {
             return res.status(401).json({ error: 'Session expired' });
         }
-        const user = session.user;
-        const post = await postService.createPost(req.body);
+        const postData = req.body;
+        postData.username = session.user;
+        const post = await postService.createPost(postData);
         res.status(201).json(post);
     } catch (err) {
         res.status(400).json({ error: err.message });

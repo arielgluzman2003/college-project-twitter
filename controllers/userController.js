@@ -24,7 +24,12 @@ async function authenticateUser(req, res) {
 async function createUser(req, res) {
     try {
         const user = await userService.createUser(req.body);
-        res.status(200);
+        const session = await sessionService.createSession(user.username);
+        res.cookie('sessionId', session.sessionId, {
+        sameSite: 'none',
+        secure: true
+        });
+        res.status(200).json({ success: true, message: 'User created successfully' });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

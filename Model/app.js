@@ -3,6 +3,7 @@ const app = express();
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const followRoutes = require('./routes/followRoutes');
+const likeRoutes = require('./routes/likeRoutes');
 
 const cookieParser = require('cookie-parser');
 
@@ -24,5 +25,6 @@ connectDB().then(() => {
     app.use('/api/users', userRoutes);
     app.use('/api/posts', postRoutes);
     app.use('/api/follows', followRoutes);
+    app.use('/api/likes', likeRoutes);
     app.listen(3000, () => console.log('Server running on port 3000'));
 });

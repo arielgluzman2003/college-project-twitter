@@ -130,6 +130,7 @@ document.addEventListener('shown.bs.modal', function(event) {
         url: 'http://localhost:3000/api/users/create',
         method: 'POST',
         contentType: 'application/json',
+        credentials: 'include',
         data: JSON.stringify({ name, email, username, password, birthYear, birthMonth, birthDay })
       })
       .done((response) => {
@@ -137,6 +138,7 @@ document.addEventListener('shown.bs.modal', function(event) {
         if (response.success) {
           alert(`Account created successfully for ${username}!`);
           closeCreateUserModal();
+          window.location.href = "/View/Pages/Feed/Feed.html"; 
         } else {
           alert(response.message || 'User creation failed. Please try again.');
         }
