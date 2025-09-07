@@ -322,6 +322,68 @@ class XFeedManager {
         profileTabBtns.forEach(btn => {
             btn.addEventListener('click', () => this.switchProfileTab(btn));
         });
+
+        // Maps event listeners
+        const mapsAddLocationBtn = document.getElementById('maps-add-location-btn');
+        const mapsRefreshBtn = document.getElementById('maps-refresh-btn');
+        const addLocationBtn = document.getElementById('add-location-btn');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalSaveBtn = document.getElementById('modal-save-btn');
+        const mapSearchBtn = document.getElementById('map-search-btn');
+        const mapTypeBtns = document.querySelectorAll('.map-type-btn');
+        const mapZoomInBtn = document.getElementById('map-zoom-in');
+        const mapZoomOutBtn = document.getElementById('map-zoom-out');
+
+        if (mapsAddLocationBtn) {
+            mapsAddLocationBtn.addEventListener('click', () => this.showAddLocationModal());
+        }
+
+        if (mapsRefreshBtn) {
+            mapsRefreshBtn.addEventListener('click', () => this.refreshMaps());
+        }
+
+        if (addLocationBtn) {
+            addLocationBtn.addEventListener('click', () => this.showAddLocationModal());
+        }
+
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener('click', () => this.hideAddLocationModal());
+        }
+
+        if (modalCancelBtn) {
+            modalCancelBtn.addEventListener('click', () => this.hideAddLocationModal());
+        }
+
+        if (modalSaveBtn) {
+            modalSaveBtn.addEventListener('click', () => this.saveLocation());
+        }
+
+        if (mapSearchBtn) {
+            mapSearchBtn.addEventListener('click', () => this.searchLocation());
+        }
+
+        mapTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => this.changeMapType(btn));
+        });
+
+        if (mapZoomInBtn) {
+            mapZoomInBtn.addEventListener('click', () => this.zoomIn());
+        }
+
+        if (mapZoomOutBtn) {
+            mapZoomOutBtn.addEventListener('click', () => this.zoomOut());
+        }
+
+        // Location action buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.location-action-btn')) {
+                const btn = e.target.closest('.location-action-btn');
+                const action = btn.title;
+                const locationItem = btn.closest('.location-item');
+                this.handleLocationAction(action, locationItem);
+            }
+        });
     }
 
     // Initialize Weather Widget
@@ -365,23 +427,8 @@ class XFeedManager {
                 throw new Error('OpenWeatherMap API key not configured. Please add your API key in the weatherConfig object.');
             }
 
-            // First, get coordinates for the city using Geocoding API
-            const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(this.weatherConfig.city)}&limit=1&appid=${this.weatherConfig.apiKey}`;
-            
-            const geocodeResponse = await fetch(geocodeUrl);
-            if (!geocodeResponse.ok) {
-                throw new Error(`Geocoding failed: ${geocodeResponse.status}`);
-            }
-
-            const geocodeData = await geocodeResponse.json();
-            if (!geocodeData || geocodeData.length === 0) {
-                throw new Error('City not found');
-            }
-
-            const { lat, lon } = geocodeData[0];
-
-            // Now get weather data using One Call API 3.0
-            const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&appid=${this.weatherConfig.apiKey}&units=${this.weatherConfig.units}`;
+            // Use the free Current Weather API instead of One Call API 3.0
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(this.weatherConfig.city)}&appid=${this.weatherConfig.apiKey}&units=${this.weatherConfig.units}`;
 
             const response = await fetch(weatherUrl);
             
@@ -411,16 +458,15 @@ class XFeedManager {
     // Update weather widget with API data
     updateWeatherWidget(weatherData) {
         try {
-            // Extract weather information from One Call API 3.0 response
-            const current = weatherData.current;
-            const cityName = this.weatherConfig.city; // Use the configured city name
-            const temperature = Math.round(current?.temp);
-            const feelsLike = Math.round(current?.feels_like);
-            const humidity = current?.humidity;
-            const windSpeed = Math.round(current?.wind_speed * 3.6); // Convert m/s to km/h
-            const visibility = Math.round((current?.visibility || 0) / 1000); // Convert m to km
-            const description = current?.weather?.[0]?.description;
-            const iconCode = current?.weather?.[0]?.icon;
+            // Extract weather information from Current Weather API response
+            const cityName = weatherData.name;
+            const temperature = Math.round(weatherData.main?.temp);
+            const feelsLike = Math.round(weatherData.main?.feels_like);
+            const humidity = weatherData.main?.humidity;
+            const windSpeed = Math.round(weatherData.wind?.speed * 3.6); // Convert m/s to km/h
+            const visibility = Math.round((weatherData.visibility || 0) / 1000); // Convert m to km
+            const description = weatherData.weather?.[0]?.description;
+            const iconCode = weatherData.weather?.[0]?.icon;
 
             // Update DOM elements
             const cityElement = document.getElementById('weather-city');
@@ -447,10 +493,7 @@ class XFeedManager {
                 iconElement.alt = description || 'Weather icon';
             }
 
-            // Update forecast data if available
-            this.updateForecast(weatherData.daily);
-
-            // Show weather content
+            // Show weather content (no forecast data with Current Weather API)
             this.showWeatherContent();
 
         } catch (error) {
@@ -459,43 +502,19 @@ class XFeedManager {
         }
     }
 
-    // Update forecast data
+    // Update forecast data (not available with Current Weather API)
     updateForecast(dailyData) {
-        if (!dailyData || dailyData.length === 0) return;
-
-        const forecastItems = document.querySelectorAll('.forecast-item');
-        const days = ['Today', 'Tomorrow', 'Wed', 'Thu', 'Fri'];
-
-        forecastItems.forEach((item, index) => {
-            if (index < dailyData.length && index < 5) {
-                const dayData = dailyData[index];
-                const dayElement = item.querySelector('.forecast-day');
-                const tempElement = item.querySelector('.forecast-temp');
-                const iconElement = item.querySelector('.forecast-icon');
-
-                if (dayElement) {
-                    if (index === 0) {
-                        dayElement.textContent = 'Today';
-                    } else if (index === 1) {
-                        dayElement.textContent = 'Tomorrow';
-                    } else {
-                        const date = new Date(dayData.dt * 1000);
-                        dayElement.textContent = date.toLocaleDateString('en-US', { weekday: 'short' });
-                    }
-                }
-
-                if (tempElement) {
-                    const temp = Math.round(dayData.temp.day);
-                    tempElement.textContent = `${temp}°C`;
-                }
-
-                if (iconElement) {
-                    const iconCode = dayData.weather[0].icon;
-                    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-                    iconElement.innerHTML = `<img src="${iconUrl}" alt="${dayData.weather[0].description}" style="width: 24px; height: 24px;">`;
-                }
-            }
-        });
+        // Current Weather API doesn't provide forecast data
+        // Show a message that forecast is not available
+        const forecastContainer = document.querySelector('.forecast-container');
+        if (forecastContainer) {
+            forecastContainer.innerHTML = `
+                <div style="padding: 16px; text-align: center; color: #71767B;">
+                    <i class="fas fa-info-circle" style="margin-bottom: 8px; display: block; font-size: 24px;"></i>
+                    <p style="margin: 0; font-size: 14px;">Forecast data requires One Call API subscription</p>
+                </div>
+            `;
+        }
     }
 
     // Update weather timestamp
@@ -590,6 +609,11 @@ class XFeedManager {
         // Initialize weather widget if weather tab is selected
         if (category === 'weather') {
             this.initWeatherWidget();
+        }
+        
+        // Initialize maps widget if maps tab is selected
+        if (category === 'maps') {
+            this.initMapsWidget();
         }
 
         this.showSuccess(`Switched to ${category.replace('-', ' ')} category`);
@@ -1461,6 +1485,678 @@ class XFeedManager {
         this.showSuccess('Avatar editing feature coming soon!');
     }
 
+    // ===== GOOGLE MAPS INTEGRATION METHODS =====
+
+    // Initialize Maps Widget
+    initMapsWidget() {
+        // Check if maps section exists
+        if (!document.getElementById('maps-content')) {
+            console.warn('Maps section not found in explore page');
+            return;
+        }
+
+        // Initialize Google Maps (placeholder for now)
+        this.initializeGoogleMaps();
+        
+        // Load saved locations
+        this.loadSavedLocations();
+        
+        console.log('Maps widget initialized');
+    }
+
+    // Initialize Google Maps (with fallback)
+    initializeGoogleMaps() {
+        const mapContainer = document.getElementById('google-map');
+        if (!mapContainer) return;
+
+        // Check if Google Maps is loaded
+        if (typeof google === 'undefined' || !google.maps) {
+            console.warn('Google Maps API not available, using fallback implementation');
+            this.initializeFallbackMap();
+            return;
+        }
+
+        // Try to initialize the real Google Maps
+        try {
+            this.initMap();
+        } catch (error) {
+            console.error('Error initializing Google Maps:', error);
+            this.initializeFallbackMap();
+        }
+    }
+
+    // Fallback map implementation (works without Google Maps API)
+    initializeFallbackMap() {
+        const mapContainer = document.getElementById('google-map');
+        if (!mapContainer) return;
+
+        // Create a functional map interface without Google Maps API
+        mapContainer.innerHTML = `
+            <div class="fallback-map">
+                <div class="map-header">
+                    <h4><i class="fas fa-map-marked-alt"></i> Interactive Map</h4>
+                    <p>Location Management System</p>
+                </div>
+                
+                <div class="map-viewport">
+                    <div class="map-grid">
+                        <div class="map-tile" data-lat="37.7749" data-lng="-122.4194">
+                            <div class="location-marker" title="San Francisco, CA">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                            <div class="location-label">San Francisco</div>
+                        </div>
+                        <div class="map-tile" data-lat="40.7128" data-lng="-74.0060">
+                            <div class="location-marker" title="New York, NY">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                            <div class="location-label">New York</div>
+                        </div>
+                        <div class="map-tile" data-lat="51.5074" data-lng="-0.1278">
+                            <div class="location-marker" title="London, UK">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                            <div class="location-label">London</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="map-info">
+                    <p><i class="fas fa-info-circle"></i> Map shows saved locations. Click markers to view details.</p>
+                </div>
+            </div>
+        `;
+
+        // Add click handlers for fallback markers
+        this.setupFallbackMapHandlers();
+        
+        console.log('Fallback map initialized successfully');
+    }
+
+    // Setup handlers for fallback map
+    setupFallbackMapHandlers() {
+        const markers = document.querySelectorAll('.location-marker');
+        markers.forEach(marker => {
+            marker.addEventListener('click', (e) => {
+                const tile = e.target.closest('.map-tile');
+                const lat = tile.dataset.lat;
+                const lng = tile.dataset.lng;
+                const title = e.target.title;
+                
+                this.showLocationInfo(title, lat, lng);
+            });
+        });
+    }
+
+    // Show location info for fallback map
+    showLocationInfo(title, lat, lng) {
+        const infoHtml = `
+            <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        background: #16181C; border: 1px solid #2F3336; border-radius: 12px; 
+                        padding: 20px; z-index: 1000; max-width: 300px; color: #E7E9EA;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="margin: 0; color: #1D9BF0;">${title}</h4>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; color: #71767B; cursor: pointer; font-size: 18px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">Coordinates:</p>
+                <p style="margin: 0 0 12px 0; font-size: 12px; color: #71767B;">
+                    ${lat}° N, ${lng}° W
+                </p>
+                <button onclick="xFeedManager.centerOnLocation('${title}', ${lat}, ${lng})" 
+                        style="background: #1D9BF0; color: white; border: none; padding: 8px 16px; 
+                               border-radius: 6px; cursor: pointer; font-size: 14px;">
+                    View Details
+                </button>
+            </div>
+        `;
+        
+        // Remove existing info if any
+        const existingInfo = document.querySelector('.location-info-popup');
+        if (existingInfo) existingInfo.remove();
+        
+        // Add new info
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'location-info-popup';
+        infoDiv.innerHTML = infoHtml;
+        document.body.appendChild(infoDiv);
+    }
+
+    // Center on location (fallback)
+    centerOnLocation(title, lat, lng) {
+        // Remove info popup
+        const infoPopup = document.querySelector('.location-info-popup');
+        if (infoPopup) infoPopup.remove();
+        
+        // Highlight the location in the list
+        const locationItems = document.querySelectorAll('.location-item');
+        locationItems.forEach(item => {
+            const name = item.querySelector('.location-name').textContent;
+            if (name.includes(title.split(',')[0])) {
+                item.style.background = '#1D9BF0';
+                item.style.borderColor = '#1D9BF0';
+                setTimeout(() => {
+                    item.style.background = '#000000';
+                    item.style.borderColor = '#2F3336';
+                }, 2000);
+            }
+        });
+        
+        this.showSuccess(`Centered on ${title}`);
+    }
+
+    // Initialize the actual Google Map
+    initMap() {
+        const mapContainer = document.getElementById('google-map');
+        if (!mapContainer) return;
+
+        // Default center (San Francisco)
+        const defaultCenter = { lat: 37.7749, lng: -122.4194 };
+        
+        // Create map options
+        const mapOptions = {
+            zoom: 10,
+            center: defaultCenter,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            styles: [
+                {
+                    featureType: "all",
+                    elementType: "geometry",
+                    stylers: [{ color: "#242f3e" }]
+                },
+                {
+                    featureType: "all",
+                    elementType: "labels.text.stroke",
+                    stylers: [{ light: -80 }]
+                },
+                {
+                    featureType: "all",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#746855" }]
+                },
+                {
+                    featureType: "water",
+                    elementType: "geometry",
+                    stylers: [{ color: "#17263c" }]
+                },
+                {
+                    featureType: "road",
+                    elementType: "geometry",
+                    stylers: [{ color: "#38414e" }]
+                },
+                {
+                    featureType: "poi",
+                    elementType: "geometry",
+                    stylers: [{ color: "#17263c" }]
+                }
+            ]
+        };
+
+        // Create the map
+        this.map = new google.maps.Map(mapContainer, mapOptions);
+        
+        // Initialize markers array
+        this.markers = [];
+        
+        // Add default markers for sample locations
+        this.addSampleMarkers();
+        
+        // Initialize geocoder
+        this.geocoder = new google.maps.Geocoder();
+        
+        // Initialize places service
+        this.placesService = new google.maps.places.PlacesService(this.map);
+        
+        console.log('Google Maps initialized successfully');
+    }
+
+    // Add sample markers
+    addSampleMarkers() {
+        const sampleLocations = [
+            {
+                name: "San Francisco, CA",
+                lat: 37.7749,
+                lng: -122.4194,
+                description: "Tech hub and cultural center"
+            },
+            {
+                name: "New York, NY", 
+                lat: 40.7128,
+                lng: -74.0060,
+                description: "The Big Apple"
+            },
+            {
+                name: "London, UK",
+                lat: 51.5074,
+                lng: -0.1278,
+                description: "Historic capital city"
+            }
+        ];
+
+        sampleLocations.forEach(location => {
+            this.addMarker(location);
+        });
+    }
+
+    // Add marker to map
+    addMarker(location) {
+        if (!this.map) return;
+
+        const marker = new google.maps.Marker({
+            position: { lat: location.lat, lng: location.lng },
+            map: this.map,
+            title: location.name,
+            animation: google.maps.Animation.DROP
+        });
+
+        // Create info window
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+                <div style="color: #000; padding: 8px;">
+                    <h4 style="margin: 0 0 8px 0; color: #1D9BF0;">${location.name}</h4>
+                    <p style="margin: 0; font-size: 14px;">${location.description || 'No description available'}</p>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #666;">
+                        ${location.lat.toFixed(4)}° N, ${location.lng.toFixed(4)}° W
+                    </p>
+                </div>
+            `
+        });
+
+        // Add click listener
+        marker.addListener('click', () => {
+            infoWindow.open(this.map, marker);
+        });
+
+        // Store marker reference
+        this.markers.push({
+            marker: marker,
+            location: location,
+            infoWindow: infoWindow
+        });
+
+        return marker;
+    }
+
+    // Add location to the locations list
+    addLocationToList(locationData) {
+        const locationsList = document.getElementById('locations-list');
+        if (!locationsList) return;
+
+        const locationItem = document.createElement('div');
+        locationItem.className = 'location-item';
+        locationItem.innerHTML = `
+            <div class="location-info">
+                <div class="location-name">${locationData.name}</div>
+                <div class="location-coords">${locationData.lat.toFixed(4)}° N, ${locationData.lng.toFixed(4)}° W</div>
+            </div>
+            <div class="location-actions">
+                <button class="location-action-btn" title="View on Map">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="location-action-btn" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+
+        locationsList.appendChild(locationItem);
+    }
+
+    // Load saved locations from database
+    async loadSavedLocations() {
+        try {
+            // TODO: Implement API call to get locations from database
+            // For now, use the static locations from HTML
+            console.log('Loading saved locations...');
+            
+            // In a real implementation, you would:
+            // 1. Call your backend API to get locations
+            // 2. Display them in the locations list
+            // 3. Add markers to the map
+            
+        } catch (error) {
+            console.error('Error loading saved locations:', error);
+            this.showError('Failed to load locations');
+        }
+    }
+
+    // Show add location modal
+    showAddLocationModal() {
+        const modal = document.getElementById('add-location-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // Clear form
+            this.clearLocationForm();
+        }
+    }
+
+    // Hide add location modal
+    hideAddLocationModal() {
+        const modal = document.getElementById('add-location-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Clear location form
+    clearLocationForm() {
+        const inputs = [
+            'location-name-input',
+            'location-address-input',
+            'location-lat-input',
+            'location-lng-input',
+            'location-description-input'
+        ];
+        
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.value = '';
+        });
+    }
+
+    // Save new location
+    async saveLocation() {
+        try {
+            const name = document.getElementById('location-name-input').value.trim();
+            const address = document.getElementById('location-address-input').value.trim();
+            const lat = parseFloat(document.getElementById('location-lat-input').value);
+            const lng = parseFloat(document.getElementById('location-lng-input').value);
+            const description = document.getElementById('location-description-input').value.trim();
+
+            // Validation
+            if (!name) {
+                this.showError('Location name is required');
+                return;
+            }
+
+            if (!address && (isNaN(lat) || isNaN(lng))) {
+                this.showError('Either address or coordinates are required');
+                return;
+            }
+
+            // Create location data
+            const locationData = {
+                name,
+                address,
+                lat: lat,
+                lng: lng,
+                description,
+                createdAt: new Date()
+            };
+
+            console.log('Saving location:', locationData);
+            
+            // Add marker to map
+            this.addMarker(locationData);
+            
+            // Add to locations list
+            this.addLocationToList(locationData);
+            
+            // TODO: Call your backend API to save the location to database
+            // await this.apiService.saveLocation(locationData);
+            
+            this.showSuccess('Location saved successfully!');
+            this.hideAddLocationModal();
+            
+        } catch (error) {
+            console.error('Error saving location:', error);
+            this.showError('Failed to save location');
+        }
+    }
+
+    // Search for location (with fallback)
+    async searchLocation() {
+        const searchInput = document.getElementById('map-search-input');
+        if (!searchInput) return;
+
+        const query = searchInput.value.trim();
+        if (!query) {
+            this.showError('Please enter a search term');
+            return;
+        }
+
+        // Check if we have Google Maps available
+        if (this.geocoder && this.map) {
+            try {
+                this.showSuccess(`Searching for "${query}"...`);
+                
+                // Use Google Geocoding API
+                this.geocoder.geocode({ address: query }, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        const location = results[0];
+                        const lat = location.geometry.location.lat();
+                        const lng = location.geometry.location.lng();
+                        
+                        // Center map on found location
+                        this.map.setCenter({ lat, lng });
+                        this.map.setZoom(15);
+                        
+                        // Add marker for search result
+                        const searchMarker = new google.maps.Marker({
+                            position: { lat, lng },
+                            map: this.map,
+                            title: location.formatted_address,
+                            animation: google.maps.Animation.BOUNCE
+                        });
+
+                        // Create info window for search result
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: `
+                                <div style="color: #000; padding: 8px;">
+                                    <h4 style="margin: 0 0 8px 0; color: #1D9BF0;">Search Result</h4>
+                                    <p style="margin: 0; font-size: 14px;">${location.formatted_address}</p>
+                                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #666;">
+                                        ${lat.toFixed(4)}° N, ${lng.toFixed(4)}° W
+                                    </p>
+                                    <button onclick="xFeedManager.addSearchResultToLocations('${location.formatted_address}', ${lat}, ${lng})" 
+                                            style="margin-top: 8px; padding: 4px 8px; background: #1D9BF0; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                        Add to Locations
+                                    </button>
+                                </div>
+                            `
+                        });
+
+                        infoWindow.open(this.map, searchMarker);
+                        
+                        this.showSuccess(`Found: ${location.formatted_address}`);
+                    } else {
+                        this.showError('Location not found. Please try a different search term.');
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error searching location:', error);
+                this.showError('Failed to search location');
+            }
+        } else {
+            // Fallback search functionality
+            this.searchLocationFallback(query);
+        }
+    }
+
+    // Fallback search functionality
+    searchLocationFallback(query) {
+        // Mock search results for common locations
+        const mockLocations = {
+            'paris': { name: 'Paris, France', lat: 48.8566, lng: 2.3522 },
+            'tokyo': { name: 'Tokyo, Japan', lat: 35.6762, lng: 139.6503 },
+            'sydney': { name: 'Sydney, Australia', lat: -33.8688, lng: 151.2093 },
+            'berlin': { name: 'Berlin, Germany', lat: 52.5200, lng: 13.4050 },
+            'madrid': { name: 'Madrid, Spain', lat: 40.4168, lng: -3.7038 },
+            'rome': { name: 'Rome, Italy', lat: 41.9028, lng: 12.4964 },
+            'moscow': { name: 'Moscow, Russia', lat: 55.7558, lng: 37.6176 },
+            'dubai': { name: 'Dubai, UAE', lat: 25.2048, lng: 55.2708 }
+        };
+
+        const searchTerm = query.toLowerCase();
+        let foundLocation = null;
+
+        // Check for exact matches
+        for (const [key, location] of Object.entries(mockLocations)) {
+            if (searchTerm.includes(key) || location.name.toLowerCase().includes(searchTerm)) {
+                foundLocation = location;
+                break;
+            }
+        }
+
+        if (foundLocation) {
+            this.showSuccess(`Found: ${foundLocation.name}`);
+            this.addSearchResultToLocations(foundLocation.name, foundLocation.lat, foundLocation.lng);
+        } else {
+            this.showError('Location not found. Try: Paris, Tokyo, Sydney, Berlin, Madrid, Rome, Moscow, or Dubai');
+        }
+    }
+
+    // Add search result to locations
+    addSearchResultToLocations(address, lat, lng) {
+        // Pre-fill the add location modal
+        document.getElementById('location-name-input').value = address;
+        document.getElementById('location-address-input').value = address;
+        document.getElementById('location-lat-input').value = lat;
+        document.getElementById('location-lng-input').value = lng;
+        
+        // Show the modal
+        this.showAddLocationModal();
+        
+        this.showSuccess('Location details added to form');
+    }
+
+    // Change map type
+    changeMapType(clickedBtn) {
+        if (!this.map) return;
+
+        // Update active button
+        document.querySelectorAll('.map-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        clickedBtn.classList.add('active');
+
+        const mapType = clickedBtn.dataset.type;
+        let googleMapType;
+        
+        switch (mapType) {
+            case 'roadmap':
+                googleMapType = google.maps.MapTypeId.ROADMAP;
+                break;
+            case 'satellite':
+                googleMapType = google.maps.MapTypeId.SATELLITE;
+                break;
+            case 'hybrid':
+                googleMapType = google.maps.MapTypeId.HYBRID;
+                break;
+            case 'terrain':
+                googleMapType = google.maps.MapTypeId.TERRAIN;
+                break;
+            default:
+                googleMapType = google.maps.MapTypeId.ROADMAP;
+        }
+        
+        this.map.setMapTypeId(googleMapType);
+        this.showSuccess(`Map type changed to ${mapType}`);
+    }
+
+    // Zoom in
+    zoomIn() {
+        if (!this.map) return;
+
+        const currentZoom = this.map.getZoom();
+        const newZoom = Math.min(currentZoom + 1, 20);
+        this.map.setZoom(newZoom);
+        
+        // Update zoom level display
+        const zoomLevel = document.getElementById('map-zoom-level');
+        if (zoomLevel) {
+            zoomLevel.textContent = newZoom;
+        }
+        
+        console.log('Zooming in to level:', newZoom);
+    }
+
+    // Zoom out
+    zoomOut() {
+        if (!this.map) return;
+
+        const currentZoom = this.map.getZoom();
+        const newZoom = Math.max(currentZoom - 1, 1);
+        this.map.setZoom(newZoom);
+        
+        // Update zoom level display
+        const zoomLevel = document.getElementById('map-zoom-level');
+        if (zoomLevel) {
+            zoomLevel.textContent = newZoom;
+        }
+        
+        console.log('Zooming out to level:', newZoom);
+    }
+
+    // Refresh maps
+    refreshMaps() {
+        console.log('Refreshing maps...');
+        this.loadSavedLocations();
+        this.showSuccess('Maps refreshed');
+    }
+
+    // Handle location actions (view, delete)
+    handleLocationAction(action, locationItem) {
+        const locationName = locationItem.querySelector('.location-name').textContent;
+        const coordsText = locationItem.querySelector('.location-coords').textContent;
+        
+        if (action === 'View on Map') {
+            // Extract coordinates from the text
+            const coords = coordsText.match(/(-?\d+\.?\d*)/g);
+            if (coords && coords.length >= 2) {
+                const lat = parseFloat(coords[0]);
+                const lng = parseFloat(coords[1]);
+                
+                // Center map on this location
+                this.map.setCenter({ lat, lng });
+                this.map.setZoom(15);
+                
+                // Find and highlight the corresponding marker
+                const markerData = this.markers.find(m => 
+                    Math.abs(m.location.lat - lat) < 0.001 && 
+                    Math.abs(m.location.lng - lng) < 0.001
+                );
+                
+                if (markerData) {
+                    markerData.infoWindow.open(this.map, markerData.marker);
+                    markerData.marker.setAnimation(google.maps.Animation.BOUNCE);
+                    setTimeout(() => {
+                        markerData.marker.setAnimation(null);
+                    }, 2000);
+                }
+                
+                this.showSuccess(`Centering map on ${locationName}`);
+            }
+        } else if (action === 'Delete') {
+            if (confirm(`Are you sure you want to delete "${locationName}"?`)) {
+                // Extract coordinates to find the marker
+                const coords = coordsText.match(/(-?\d+\.?\d*)/g);
+                if (coords && coords.length >= 2) {
+                    const lat = parseFloat(coords[0]);
+                    const lng = parseFloat(coords[1]);
+                    
+                    // Remove marker from map
+                    const markerIndex = this.markers.findIndex(m => 
+                        Math.abs(m.location.lat - lat) < 0.001 && 
+                        Math.abs(m.location.lng - lng) < 0.001
+                    );
+                    
+                    if (markerIndex !== -1) {
+                        this.markers[markerIndex].marker.setMap(null);
+                        this.markers.splice(markerIndex, 1);
+                    }
+                }
+                
+                // Remove from locations list
+                locationItem.remove();
+                this.showSuccess(`Deleted ${locationName}`);
+            }
+        }
+    }
+
     // Cleanup method for weather timer
     cleanup() {
         if (this.weatherRefreshTimer) {
@@ -1486,4 +2182,10 @@ window.addEventListener('beforeunload', () => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = XFeedManager;
 }
+
+// Global callback function for Google Maps initialization
+window.initGoogleMaps = function() {
+    console.log('Google Maps API loaded successfully');
+    // The map will be initialized when the maps tab is clicked
+};
 
