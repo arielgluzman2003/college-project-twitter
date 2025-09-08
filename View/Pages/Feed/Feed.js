@@ -1033,20 +1033,17 @@ class XFeedManager {
                 ${post.media ? this.renderMedia(post.media, post.mediaType) : ''}
                 
                 <div class="post-actions">
-                    <div class="post-action reply" onclick="xFeedManager.handleReply('${post.id}')">
+                    <div class="post-action reply" onclick="xFeedManager.handleReply('${
+                      post.id
+                    }')">
                         <i class="far fa-comment"></i>
                         <span>${post.replies}</span>
                     </div>
-                    <div class="post-action retweet ${post.isRetweeted ? 'retweeted' : ''}" onclick="xFeedManager.handleRetweet('${post.id}')">
-                        <i class="fas fa-retweet"></i>
-                        <span>${post.retweets}</span>
-                    </div>
-                    <div class="post-action like ${post.isLiked ? 'liked' : ''}" onclick="xFeedManager.handleLike('${post.id}')">
-                        <i class="${post.isLiked ? 'fas' : 'far'} fa-heart"></i>
+                    <div class="post-action like ${
+                      post.isLiked ? "liked" : ""
+                    }" onclick="xFeedManager.handleLike('${post.id}')">
+                        <i class="${post.isLiked ? "fas" : "far"} fa-heart"></i>
                         <span>${post.likes}</span>
-                    </div>
-                    <div class="post-action share" onclick="xFeedManager.handleShare('${post.id}')">
-                        <i class="far fa-share-square"></i>
                     </div>
                 </div>
             </div>
