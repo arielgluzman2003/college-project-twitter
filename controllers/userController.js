@@ -1,6 +1,29 @@
 const userService = require('../Model/services/userService');
 const sessionService = require('../Model/services/sessionService');
 
+async function getAllUsers(req, res) {
+    try {
+        const sessionId = req.cookies.sessionId;
+        if (!sessionId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const session = await sessionService.getSessionById(sessionId);
+        if (!session) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const username = session.user;
+        if (!username) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const users = await userService.getAllUsersExcept(username);
+        res.status(200).json(users); 
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+
+}
+
 async function authenticateUser(req, res) {
     try {
         const user = await userService.getUser(req.body.username);
@@ -15,6 +38,27 @@ async function authenticateUser(req, res) {
         } else {
             res.status(401).json({ success: false, message: 'Authentication failed' });
     }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+async function getMe(req, res) {
+    try {
+        const sessionId = req.cookies.sessionId;
+        if (!sessionId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const session = await sessionService.getSessionById(sessionId);
+        if (!session) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const username = session.user;
+        if (!username) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const user = await userService.getUser(username);
+        res.status(200).json(user);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -65,4 +109,4 @@ async function deleteUser(req, res) {
     }
 }
 
-module.exports = { createUser, getUser, updateUser, authenticateUser, deleteUser };
+module.exports = { createUser, getUser, getMe, updateUser, authenticateUser, deleteUser, getAllUsers };

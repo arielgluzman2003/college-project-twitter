@@ -130,7 +130,7 @@ document.addEventListener('shown.bs.modal', function(event) {
         url: 'http://localhost:3000/api/users/create',
         method: 'POST',
         contentType: 'application/json',
-        credentials: 'include',
+        xhrFields: { withCredentials: true },
         data: JSON.stringify({ name, email, username, password, birthYear, birthMonth, birthDay })
       })
       .done((response) => {

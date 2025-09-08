@@ -2,6 +2,27 @@ const express = require('express');
 const likesService = require('../Model/services/likeService');
 const sessionService = require('../Model/services/sessionService');
 
+async function removeLike(req, res) {
+    try {
+        const sessionId = req.cookies.sessionId;
+        if (!sessionId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+       }
+         const session = await sessionService.getSessionById(sessionId);
+         if (!session) {
+            return res.status(401).json({ error: 'Unauthorized' });
+         }
+         const postId = req.body.postId;
+         if (!postId) {
+             return res.status(400).json({ error: 'postId is required' });
+         }
+         await likesService.removeLike(postId, session.user);
+         res.status(200).json({ message: 'Like removed successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
 // Get all users followed by the current user
 async function createLike(req, res) {
     try {
@@ -36,4 +57,4 @@ async function createLike(req, res) {
 }
 
 
-module.exports = { createLike };
+module.exports = { createLike, removeLike };
