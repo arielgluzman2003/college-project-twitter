@@ -135,6 +135,9 @@
         url: 'http://localhost:3000/api/users/authenticate',
         method: 'POST',
         contentType: 'application/json',
+        xhrFields: {
+          withCredentials: true
+        },
         data: JSON.stringify({ username, password })
       })
         .done((response) => {
@@ -142,6 +145,7 @@
           if (response.success) {
             alert(`Welcome, ${username}!`);
             closeLoginModal();
+            window.location.href = "/View/Pages/Feed/Feed.html"; 
           } else {
             alert(response.message || 'Login failed, please try again.');
           }

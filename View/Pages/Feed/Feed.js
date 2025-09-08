@@ -22,6 +22,7 @@ class APIService {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                credentials: 'include'
             },
             body: JSON.stringify({ username, password })
         });
@@ -37,16 +38,19 @@ class APIService {
     async createPost(postData) {
         const response = await fetch(`${this.baseURL}/posts`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(postData)
         });
         return response.json();
     }
 
-    async getFeedPosts(username) {
-        const response = await fetch(`${this.baseURL}/posts/${username}`);
+    async getFeedPosts() {
+        const response = await fetch(`${this.baseURL}/posts`, {
+            method: 'GET',
+            credentials: 'include'});
         return response.json();
     }
 
@@ -718,7 +722,6 @@ class XFeedManager {
             
             // Prepare post data according to database schema
             const postData = {
-                username: this.currentUser.username,
                 textContent: content,
                 date: new Date()
             };
@@ -866,7 +869,7 @@ class XFeedManager {
             this.setLoadingState(true);
             
             // Get posts from followed users
-            const response = await this.apiService.getFeedPosts(this.currentUser.username);
+            const response = await this.apiService.getFeedPosts();
             
             if (response.error) {
                 throw new Error(response.error);
@@ -930,7 +933,7 @@ class XFeedManager {
                     createdAt: post.date,
                     media: media,
                     mediaType: mediaType,
-                    likes: 0, // TODO: Implement like counting
+                    likes: post.likes || 0,
                     retweets: 0, // TODO: Implement retweet counting
                     replies: 0, // TODO: Implement reply counting
                     views: 0, // TODO: Implement view counting
@@ -1122,6 +1125,7 @@ class XFeedManager {
     async likePost(postId) {
         const response = await fetch(`${this.apiService.baseURL}/likes`, {
             method: 'POST',
+            credentials: 'include', // <-- Add this line
             headers: {
                 'Content-Type': 'application/json',
             },
