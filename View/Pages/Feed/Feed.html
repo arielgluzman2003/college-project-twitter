@@ -65,7 +65,7 @@
                         <i class="fab fa-x-twitter"></i>
                         <span>Premium</span>
                     </a>
-                    <a href="#" class="nav-item" data-section="profile">
+                    <a href="#" class="nav-item">
                         <i class="fas fa-user"></i>
                         <span>Profile</span>
                     </a>
@@ -162,8 +162,7 @@
                             <button class="explore-tab-btn" data-category="trending">Trending</button>
                             <button class="explore-tab-btn" data-category="news">News</button>
                             <button class="explore-tab-btn" data-category="sports">Sports</button>
-                            <button class="explore-tab-btn" data-category="weather">Weather</button>
-                            <button class="explore-tab-btn" data-category="maps">Maps</button>
+                            <button class="explore-tab-btn" data-category="entertainment">Entertainment</button>
                         </div>
                     </div>
                 </header>
@@ -265,401 +264,28 @@
                         </div>
                     </div>
 
-                    <!-- Weather Content -->
-                    <div id="weather-content" class="explore-category-content">
-                        <div class="weather-section">
-                            <div class="weather-header">
-                                <h3><i class="fas fa-cloud-sun me-2"></i>Current Weather</h3>
-                                <button class="weather-refresh-btn" id="weather-refresh-btn" title="Refresh weather">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Loading State -->
-                            <div id="weather-loading" class="weather-loading">
-                                <div class="weather-spinner">
-                                    <i class="fas fa-spinner fa-spin"></i>
+                    <!-- Entertainment Content -->
+                    <div id="entertainment-content" class="explore-category-content">
+                        <div class="entertainment-posts">
+                            <h3>Entertainment News</h3>
+                            <div class="entertainment-post">
+                                <div class="entertainment-post-header">
+                                    <span class="entertainment-post-source">Hollywood</span>
+                                    <span class="entertainment-post-time">1h</span>
                                 </div>
-                                <p>Loading weather data...</p>
+                                <div class="entertainment-post-title">New Marvel Movie Breaks Box Office Records</div>
+                                <div class="entertainment-post-excerpt">Latest superhero film earns $200M in opening weekend...</div>
+                                <div class="entertainment-post-stats">18.5K posts</div>
                             </div>
-                            
-                            <!-- Weather Content -->
-                            <div id="weather-display" class="weather-display" style="display: none;">
-                                <div class="weather-main-info">
-                                    <div class="weather-location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span id="weather-city">City Name</span>
-                                    </div>
-                                    
-                                    <div class="weather-current">
-                                        <div class="weather-icon-large">
-                                            <img id="weather-icon" src="" alt="Weather icon">
-                                        </div>
-                                        <div class="weather-temp-large">
-                                            <span id="weather-temperature">--</span>°C
-                                        </div>
-                                        <div class="weather-description-large">
-                                            <span id="weather-description">Weather description</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="weather-details-grid">
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-thermometer-half"></i>
-                                            <div class="detail-label">Feels like</div>
-                                            <div class="detail-value"><span id="weather-feels-like">--</span>°C</div>
-                                        </div>
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-tint"></i>
-                                            <div class="detail-label">Humidity</div>
-                                            <div class="detail-value"><span id="weather-humidity">--</span>%</div>
-                                        </div>
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-wind"></i>
-                                            <div class="detail-label">Wind Speed</div>
-                                            <div class="detail-value"><span id="weather-wind">--</span> km/h</div>
-                                        </div>
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-eye"></i>
-                                            <div class="detail-label">Visibility</div>
-                                            <div class="detail-value"><span id="weather-visibility">--</span> km</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="weather-updated">
-                                        <small>Last updated: <span id="weather-updated-time">--</span></small>
-                                    </div>
+                            <div class="entertainment-post">
+                                <div class="entertainment-post-header">
+                                    <span class="entertainment-post-source">Music</span>
+                                    <span class="entertainment-post-time">4h</span>
                                 </div>
-                                
-                                <!-- Weather Forecast (placeholder) -->
-                                <div class="weather-forecast">
-                                    <h4>5-Day Forecast</h4>
-                                    <div class="forecast-items">
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Today</div>
-                                            <div class="forecast-icon">☀️</div>
-                                            <div class="forecast-temp">22°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Tomorrow</div>
-                                            <div class="forecast-icon">⛅</div>
-                                            <div class="forecast-temp">20°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Wed</div>
-                                            <div class="forecast-icon">🌧️</div>
-                                            <div class="forecast-temp">18°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Thu</div>
-                                            <div class="forecast-icon">☀️</div>
-                                            <div class="forecast-temp">24°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Fri</div>
-                                            <div class="forecast-icon">⛅</div>
-                                            <div class="forecast-temp">21°C</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="entertainment-post-title">Taylor Swift Announces World Tour 2024</div>
+                                <div class="entertainment-post-excerpt">Global tour to visit 50+ cities across 6 continents...</div>
+                                <div class="entertainment-post-stats">25.7K posts</div>
                             </div>
-                            
-                            <!-- Error State -->
-                            <div id="weather-error" class="weather-error" style="display: none;">
-                                <div class="weather-error-icon">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                                <p id="weather-error-message">Unable to load weather data</p>
-                                <button class="weather-retry-btn" id="weather-retry-btn">
-                                    <i class="fas fa-redo"></i> Try Again
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Maps Content -->
-                    <div id="maps-content" class="explore-category-content">
-                        <div class="maps-section">
-                            <div class="maps-header">
-                                <h3><i class="fas fa-map-marked-alt me-2"></i>Interactive Map</h3>
-                                <div class="maps-controls">
-                                    <button class="maps-control-btn" id="maps-add-location-btn" title="Add Location">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                    <button class="maps-control-btn" id="maps-refresh-btn" title="Refresh Map">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Map Container -->
-                            <div class="maps-container">
-                                <div id="google-map" class="google-map">
-                                    <!-- Google Maps will be loaded here -->
-                                    <div class="map-placeholder">
-                                        <i class="fas fa-map-marked-alt"></i>
-                                        <h4>Interactive Map</h4>
-                                        <p>Loading Google Maps...</p>
-                                        <small>Map will display locations from posts and allow location management</small>
-                                    </div>
-                                </div>
-                                
-                                <!-- Map Controls -->
-                                <div class="map-controls-panel">
-                                    <div class="map-control-group">
-                                        <label for="map-search-input">Search Location:</label>
-                                        <div class="map-search-container">
-                                            <input type="text" id="map-search-input" placeholder="Enter city, address, or coordinates">
-                                            <button id="map-search-btn">
-                                                <i class="fas fa-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="map-control-group">
-                                        <label>Map Type:</label>
-                                        <div class="map-type-buttons">
-                                            <button class="map-type-btn active" data-type="roadmap">Road</button>
-                                            <button class="map-type-btn" data-type="satellite">Satellite</button>
-                                            <button class="map-type-btn" data-type="hybrid">Hybrid</button>
-                                            <button class="map-type-btn" data-type="terrain">Terrain</button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="map-control-group">
-                                        <label>Zoom Level:</label>
-                                        <div class="zoom-controls">
-                                            <button id="map-zoom-in">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                            <span id="map-zoom-level">10</span>
-                                            <button id="map-zoom-out">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Location List -->
-                                <div class="locations-panel">
-                                    <h4><i class="fas fa-map-pin"></i> Saved Locations</h4>
-                                    <div id="locations-list" class="locations-list">
-                                        <div class="location-item">
-                                            <div class="location-info">
-                                                <div class="location-name">San Francisco, CA</div>
-                                                <div class="location-coords">37.7749° N, 122.4194° W</div>
-                                            </div>
-                                            <div class="location-actions">
-                                                <button class="location-action-btn" title="View on Map">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="location-action-btn" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="location-item">
-                                            <div class="location-info">
-                                                <div class="location-name">New York, NY</div>
-                                                <div class="location-coords">40.7128° N, 74.0060° W</div>
-                                            </div>
-                                            <div class="location-actions">
-                                                <button class="location-action-btn" title="View on Map">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="location-action-btn" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="location-item">
-                                            <div class="location-info">
-                                                <div class="location-name">London, UK</div>
-                                                <div class="location-coords">51.5074° N, 0.1278° W</div>
-                                            </div>
-                                            <div class="location-actions">
-                                                <button class="location-action-btn" title="View on Map">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="location-action-btn" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="add-location-section">
-                                        <button class="add-location-btn" id="add-location-btn">
-                                            <i class="fas fa-plus"></i> Add New Location
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Add Location Modal -->
-                            <div id="add-location-modal" class="modal" style="display: none;">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h3>Add New Location</h3>
-                                        <button class="modal-close" id="modal-close-btn">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label for="location-name-input">Location Name:</label>
-                                            <input type="text" id="location-name-input" placeholder="Enter location name">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="location-address-input">Address:</label>
-                                            <input type="text" id="location-address-input" placeholder="Enter full address">
-                                        </div>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="location-lat-input">Latitude:</label>
-                                                <input type="number" id="location-lat-input" step="any" placeholder="e.g., 37.7749">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="location-lng-input">Longitude:</label>
-                                                <input type="number" id="location-lng-input" step="any" placeholder="e.g., -122.4194">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="location-description-input">Description (optional):</label>
-                                            <textarea id="location-description-input" placeholder="Add a description for this location"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
-                                        <button class="btn btn-primary" id="modal-save-btn">Save Location</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Profile Section -->
-            <section id="profile-section" class="content-section">
-                <!-- Profile Header -->
-                <header class="x-header">
-                    <div class="header-content">
-                        <div class="profile-header-nav">
-                            <button class="back-btn" id="profile-back-btn">
-                                <i class="fas fa-arrow-left"></i>
-                            </button>
-                            <div class="profile-header-info">
-                                <h1 id="profile-display-name">John Doe</h1>
-                                <span id="profile-post-count">1,234 posts</span>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Profile Cover Photo -->
-                <div class="profile-cover">
-                    <img src="https://via.placeholder.com/600x200/1DA1F2/ffffff?text=Cover+Photo" alt="Cover Photo" id="profile-cover-photo">
-                    <button class="edit-cover-btn" id="edit-cover-btn">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                </div>
-
-                <!-- Profile Info Section -->
-                <div class="profile-info-section">
-                    <div class="profile-avatar-container">
-                        <img src="https://via.placeholder.com/120/1DA1F2/ffffff?text=JD" alt="Profile Picture" id="profile-avatar" class="profile-avatar-large">
-                        <button class="edit-avatar-btn" id="edit-avatar-btn">
-                            <i class="fas fa-camera"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="profile-actions">
-                        <button class="edit-profile-btn" id="edit-profile-btn">
-                            Edit profile
-                        </button>
-                    </div>
-
-                    <div class="profile-details">
-                        <h2 id="profile-name">John Doe</h2>
-                        <p id="profile-username">@johndoe</p>
-                        <p id="profile-bio">Software Developer | Tech Enthusiast | Coffee Lover ☕ | Building the future one line of code at a time 🚀</p>
-                        
-                        <div class="profile-meta">
-                            <div class="profile-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span id="profile-location">San Francisco, CA</span>
-                            </div>
-                            <div class="profile-website">
-                                <i class="fas fa-link"></i>
-                                <a href="#" id="profile-website">johndoe.dev</a>
-                            </div>
-                            <div class="profile-join-date">
-                                <i class="fas fa-calendar"></i>
-                                <span id="profile-join-date">Joined March 2020</span>
-                            </div>
-                        </div>
-
-                        <div class="profile-stats">
-                            <div class="stat-item">
-                                <span class="stat-number" id="profile-following-count">1,234</span>
-                                <span class="stat-label">Following</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" id="profile-followers-count">5,678</span>
-                                <span class="stat-label">Followers</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Profile Tabs -->
-                <div class="profile-tabs">
-                    <button class="profile-tab-btn active" data-tab="posts">
-                        <span>Posts</span>
-                    </button>
-                    <button class="profile-tab-btn" data-tab="replies">
-                        <span>Replies</span>
-                    </button>
-                    <button class="profile-tab-btn" data-tab="media">
-                        <span>Media</span>
-                    </button>
-                    <button class="profile-tab-btn" data-tab="likes">
-                        <span>Likes</span>
-                    </button>
-                </div>
-
-                <!-- Profile Content -->
-                <div class="profile-content">
-                    <!-- Posts Tab -->
-                    <div id="profile-posts" class="profile-tab-content active">
-                        <div class="posts-feed" id="profile-posts-container">
-                            <!-- User's posts will be loaded here -->
-                        </div>
-                    </div>
-
-                    <!-- Replies Tab -->
-                    <div id="profile-replies" class="profile-tab-content">
-                        <div class="empty-state">
-                            <i class="fas fa-comment"></i>
-                            <h3>No replies yet</h3>
-                            <p>When you reply to someone, it will show up here.</p>
-                        </div>
-                    </div>
-
-                    <!-- Media Tab -->
-                    <div id="profile-media" class="profile-tab-content">
-                        <div class="media-grid" id="profile-media-grid">
-                            <!-- User's media will be loaded here -->
-                        </div>
-                    </div>
-
-                    <!-- Likes Tab -->
-                    <div id="profile-likes" class="profile-tab-content">
-                        <div class="empty-state">
-                            <i class="fas fa-heart"></i>
-                            <h3>No likes yet</h3>
-                            <p>Posts you like will show up here.</p>
                         </div>
                     </div>
                 </div>
@@ -677,6 +303,74 @@
                     </div>
                 </div>
 
+                <!-- Weather Widget -->
+                <div class="weather-widget">
+                    <div class="weather-header">
+                        <h3><i class="fas fa-cloud-sun me-2"></i>Weather</h3>
+                        <button class="weather-refresh-btn" id="weather-refresh-btn" title="Refresh weather">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Loading State -->
+                    <div id="weather-loading" class="weather-loading">
+                        <div class="weather-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <p>Loading weather...</p>
+                    </div>
+                    
+                    <!-- Weather Content -->
+                    <div id="weather-content" class="weather-content" style="display: none;">
+                        <div class="weather-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="weather-city">City Name</span>
+                        </div>
+                        
+                        <div class="weather-main">
+                            <div class="weather-icon">
+                                <img id="weather-icon" src="" alt="Weather icon">
+                            </div>
+                            <div class="weather-temp">
+                                <span id="weather-temperature">--</span>°C
+                            </div>
+                        </div>
+                        
+                        <div class="weather-description">
+                            <span id="weather-description">Weather description</span>
+                        </div>
+                        
+                        <div class="weather-details">
+                            <div class="weather-detail">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span>Feels like: <span id="weather-feels-like">--</span>°C</span>
+                            </div>
+                            <div class="weather-detail">
+                                <i class="fas fa-tint"></i>
+                                <span>Humidity: <span id="weather-humidity">--</span>%</span>
+                            </div>
+                            <div class="weather-detail">
+                                <i class="fas fa-wind"></i>
+                                <span>Wind: <span id="weather-wind">--</span> km/h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="weather-updated">
+                            <small>Last updated: <span id="weather-updated-time">--</span></small>
+                        </div>
+                    </div>
+                    
+                    <!-- Error State -->
+                    <div id="weather-error" class="weather-error" style="display: none;">
+                        <div class="weather-error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <p id="weather-error-message">Unable to load weather data</p>
+                        <button class="weather-retry-btn" id="weather-retry-btn">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Trending Section -->
                 <div class="trending-section">
@@ -721,9 +415,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Google Maps API -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsMLVg6h1kvxjV8Pac3xhnXHSNz7DwKok&libraries=places&callback=initGoogleMaps"></script>
     
     <!-- Custom JavaScript -->
     <script src="Feed.js"></script>
