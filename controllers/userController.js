@@ -1,5 +1,6 @@
 const userService = require('../Model/services/userService');
 const sessionService = require('../Model/services/sessionService');
+const followService = require('../Model/services/followService');
 
 async function getAllUsers(req, res) {
     try {
@@ -17,7 +18,14 @@ async function getAllUsers(req, res) {
         }
 
         const users = await userService.getAllUsersExcept(username);
-        res.status(200).json(users); 
+        let newUsers = [];
+        for (let user of users) {
+            const isFollowed = await followService.isFollowing(username, user.username);
+            const newUser = {...user._doc, isFollowed};
+            newUsers.push(newUser);
+        }
+
+        res.status(200).json(newUsers);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

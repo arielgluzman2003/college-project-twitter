@@ -26,11 +26,13 @@ async function getFeedPosts(req, res) {
         // }
         followedUsernames.push(session.user); // Include user's own posts
         const posts = await postService.getPostsByUsernames(followedUsernames);
+        let newPosts = [];
         for (const post of posts) {
             const postLikes = await likesService.getLikesByPostId(post.postId);
             post.isLikedByUser = postLikes.some(like => like.username === session.user);
+            newPosts.push(post);
         }
-        res.json(posts);
+        res.json(newPosts);
     } catch (err) {
         res.status(500).json({ error: err.message});
     }

@@ -928,7 +928,7 @@ class XFeedManager {
         if (!post) return;
 
         try {
-            const isCurrentlyLiked = post.isLikedByUser;
+            const isCurrentlyLiked = post.isLiked;
             
             if (isCurrentlyLiked) {
                 // Unlike the post
@@ -1090,7 +1090,7 @@ class XFeedManager {
                 document.getElementById('who-to-follow').appendChild(suggestionDiv);
                 document.getElementById(`follow-btn-${user.username}`).addEventListener('click', (e) => {
                     this.followUser(user.username);
-                    e.target.textContent = 'Following';
+                    e.target.textContent = user.isFollowed ? 'Following' : 'Follow';
                     e.target.disabled = true;
                     e.target.style.backgroundColor = '#000000';
                     e.target.style.color = '#FFFFFF';

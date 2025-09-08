@@ -12,7 +12,18 @@ async function createFollow(follower, followed) {
     return await follow.save();
 }
 
+async function deleteFollow(follower, followed) {
+    return await Follow.deleteOne({ followingUser: follower, followedUser: followed });
+}
+
+async function isFollowing(follower, followed) {
+    const follow = await Follow.findOne({ followingUser: follower, followedUser: followed });
+    return !!follow;
+}
+
 module.exports = {
     getFollowedUsernames,
-    createFollow
+    createFollow,
+    deleteFollow,
+    isFollowing
 };
