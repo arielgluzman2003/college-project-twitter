@@ -1,6 +1,8 @@
 const postService = require('../Model/services/postService');
 const followService = require('../Model/services/followService');
 const sessionService = require('../Model/services/sessionService');
+const likesService = require('../Model/services/likeService');
+
 
 // Get posts from users followed by :username
 async function getFeedPosts(req, res) {
@@ -18,11 +20,16 @@ async function getFeedPosts(req, res) {
         if (sessionExpiryDate < new Date()) {
             return res.status(401).json({ error: 'Session expired' });
         }
-        const followedUsernames = await followService.getFollowedUsernames(session.user);
-        if (followedUsernames.length === 0) {
-            return res.json([]); // No follows, return empty array
-        }
+        let followedUsernames = await followService.getFollowedUsernames(session.user);
+        // if (followedUsernames.length === 0) {
+        //     return res.json([]); // No follows, return empty array
+        // }
+        followedUsernames.push(session.user); // Include user's own posts
         const posts = await postService.getPostsByUsernames(followedUsernames);
+        for (const post of posts) {
+            const postLikes = await likesService.getLikesByPostId(post.postId);
+            post.isLikedByUser = postLikes.some(like => like.username === session.user);
+        }
         res.json(posts);
     } catch (err) {
         res.status(500).json({ error: err.message});

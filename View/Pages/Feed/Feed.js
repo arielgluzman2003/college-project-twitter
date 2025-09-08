@@ -17,6 +17,17 @@ class APIService {
         return response.json();
     }
 
+    async getExistingUsers(){
+        const response = await fetch(`${this.baseURL}/users/all`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        return response.json();
+    }
+
     async authenticateUser(username, password) {
         const response = await fetch(`${this.baseURL}/users/authenticate`, {
             method: 'POST',
@@ -55,13 +66,14 @@ class APIService {
     }
 
     // Follow API methods
-    async followUser(followingUser, followedUser) {
+    async followUser(followedUser) {
         const response = await fetch(`${this.baseURL}/follows`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ followingUser, followedUser })
+            body: JSON.stringify({ followedUser })
         });
         return response.json();
     }
@@ -79,6 +91,14 @@ class APIService {
 
     async getFollowedUsers(username) {
         const response = await fetch(`${this.baseURL}/follows/${username}`);
+        return response.json();
+    }
+
+    async getOwnUser(){
+        const response = await fetch(`${this.baseURL}/users/me`, {
+            method: 'GET',
+            credentials: 'include'
+        });
         return response.json();
     }
 }
@@ -115,6 +135,8 @@ class XFeedManager {
             this.loadPosts();
             this.updateCharacterCount();
             this.initWeatherWidget();
+            this.getOwnUser();
+            this.getExistingUsersToFollow();
         } catch (error) {
             console.error('Initialization error:', error);
             this.showError('Failed to initialize the feed');
@@ -202,12 +224,12 @@ class XFeedManager {
             btn.addEventListener('click', () => this.switchExploreCategory(btn));
         });
 
-        // Follow buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('follow-btn')) {
-                this.handleFollow(e.target);
-            }
-        });
+        // // Follow buttons
+        // document.addEventListener('click', (e) => {
+        //     if (e.target.classList.contains('follow-btn')) {
+        //         this.handleFollow(e.target);
+        //     }
+        // });
 
         // Weather widget event listeners
         const weatherRefreshBtn = document.getElementById('weather-refresh-btn');
@@ -658,7 +680,7 @@ class XFeedManager {
                 this.showSuccess('Unfollowed user');
             } else {
                 // Follow user
-                await this.apiService.followUser(this.currentUser.username, username);
+                await this.apiService.followUser(username);
                 button.textContent = 'Following';
                 button.style.backgroundColor = '#000000';
                 button.style.color = '#FFFFFF';
@@ -729,13 +751,13 @@ class XFeedManager {
                 const isLiked = this.likes.has(post._id);
 
                 const transformedPost = {
-                    id: post._id,
+                    id: post.postId,
                     content: post.textContent,
                     author: {
                         id: author._id || author.username,
                         name: author.name || author.username,
                         username: author.username,
-                        avatar: author.avatar || `https://via.placeholder.com/48/1DA1F2/ffffff?text=${author.username.charAt(0).toUpperCase()}`
+                        avatar: author.avatar || 'https://cdn-icons-png.freepik.com/512/4159/4159471.png'
                     },
                     createdAt: post.date,
                     media: media,
@@ -744,7 +766,7 @@ class XFeedManager {
                     retweets: 0, // TODO: Implement retweet counting
                     replies: 0, // TODO: Implement reply counting
                     views: 0, // TODO: Implement view counting
-                    isLiked: isLiked,
+                    isLiked: post.isLikedByUser,
                     isRetweeted: false // TODO: Implement retweet tracking
                 };
 
@@ -753,6 +775,7 @@ class XFeedManager {
                 console.error('Error transforming post:', error);
             }
         }
+        transformedPosts.sort((postA, postB) => new Date(postB.createdAt) - new Date(postA.createdAt));
 
         return transformedPosts;
     }
@@ -905,7 +928,7 @@ class XFeedManager {
         if (!post) return;
 
         try {
-            const isCurrentlyLiked = this.likes.has(postId);
+            const isCurrentlyLiked = post.isLikedByUser;
             
             if (isCurrentlyLiked) {
                 // Unlike the post
@@ -953,6 +976,7 @@ class XFeedManager {
     async unlikePost(postId) {
         const response = await fetch(`${this.apiService.baseURL}/likes`, {
             method: 'DELETE',
+            credentials: 'include', 
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -1024,6 +1048,78 @@ class XFeedManager {
             composerActions.style.position = 'relative';
             composerActions.appendChild(countDiv);
         }
+    }
+
+    followUser(username){
+        this.apiService.followUser(username)
+        .then(response => {
+            console.log('Followed user:', response);
+            this.showSuccess(`You followed @${username}`);
+        })
+        .catch(error => {
+            console.error('Error following user:', error);
+            this.showError('Failed to follow user. Please try again later.');
+        });
+    }
+
+    getExistingUsersToFollow(){
+                    //         <div class="follow-suggestion">
+                    //     <img src="https://via.placeholder.com/40/28a745/ffffff?text=JS" alt="Profile" class="suggestion-avatar">
+                    //     <div class="suggestion-info">
+                    //         <div class="suggestion-name">Jane Smith</div>
+                    //         <div class="suggestion-handle">@janesmith</div>
+                    //     </div>
+                    //     <button class="follow-btn">Follow</button>
+                    // </div>
+
+        this.apiService.getExistingUsers()
+        .then(users => {
+            this.existingUsers = users;
+            console.log('Existing users:', this.existingUsers);
+            for (const user of this.existingUsers) {
+                if (user.username === this.currentUser.username) continue; // Skip current user
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.className = 'follow-suggestion fade-in';
+                suggestionDiv.innerHTML = `
+                    <img src="${user.avatar || 'https://via.placeholder.com/40/1DA1F2/ffffff?text=' + user.username.charAt(0).toUpperCase()}" alt="Profile" class="suggestion-avatar">
+                    <div class="suggestion-info">
+                        <div class="suggestion-name">${user.name || user.username}</div>
+                        <div class="suggestion-handle">@${user.username}</div>
+                    </div>
+                    <button class="follow-btn" id="follow-btn-${user.username}")">Follow</button>`;
+                document.getElementById('who-to-follow').appendChild(suggestionDiv);
+                document.getElementById(`follow-btn-${user.username}`).addEventListener('click', (e) => {
+                    this.followUser(user.username);
+                    e.target.textContent = 'Following';
+                    e.target.disabled = true;
+                    e.target.style.backgroundColor = '#000000';
+                    e.target.style.color = '#FFFFFF';
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching users:', error);
+            this.showError('Failed to load users. Please try again later.');
+        });
+    }
+
+    getOwnUser(){
+        this.apiService.getOwnUser()
+        .then(user => {
+            this.currentUser = user;
+            console.log('Current user:', this.currentUser);
+            const profilePhoto = document.getElementById("user-profile");
+            const profileName = document.getElementById("profile-name");
+            const profileUsername = document.getElementById("profile-username");
+
+            profilePhoto.src = this.currentUser.userPhotoUrl || 'https://via.placeholder.com/40/1DA1F2/ffffff?text=JD';
+            profileName.textContent = this.currentUser.name || 'John Doe';
+            profileUsername.textContent = this.currentUser.username || '@johndoe';
+        })
+        .catch(error => {
+            console.error('Error fetching current user:', error);
+            this.showError('Failed to load user data. Please log in again.');
+        });
     }
 
     // Update post button state

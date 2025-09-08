@@ -1,5 +1,9 @@
 const User = require('../schemas/user');
 
+async function getAllUsersExcept(username) {
+    return await User.find({ username: { $ne: username } });
+}
+
 // Create user
 async function createUser(data) {
     const user = new User(data);
@@ -26,4 +30,4 @@ async function deleteUser(username) {
     return await User.findOneAndDelete({ username });
 }
 
-module.exports = { createUser, getUsers, getUser, updateUser, deleteUser };
+module.exports = { createUser, getUsers, getUser,getAllUsersExcept , updateUser, deleteUser };

@@ -6,7 +6,16 @@ async function createLike(postId, username) {
     return await like.save();
 }
 
+async function removeLike(postId, username) {
+    return await Like.deleteOne({ postId: postId, username: username });
+}
+
+async function getLikesByPostId(postId) {
+    return await Like.find({ postId: postId });
+}
 
 module.exports = {
-    createLike
+    createLike,
+    removeLike,
+    getLikesByPostId
 };

@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     birthDay: {
         type: Number,
         required: true
+    },
+    userPhotoUrl: {
+        type: String,
+        default: 'https://cdn-icons-png.freepik.com/512/4159/4159471.png'
     }
 });
 
