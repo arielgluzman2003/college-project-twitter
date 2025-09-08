@@ -116,9 +116,16 @@ class XFeedManager {
         this.currentSection = 'home';
         this.currentCategory = 'for-you';
         
+        let watchId = navigator.geolocation.watchPosition(
+        (position) => {
+            console.log("Updated Latitude:", position.coords.latitude);
+            console.log("Updated Longitude:", position.coords.longitude);
+        }
+        );
+
         // Weather Widget Configuration
         this.weatherConfig = {
-            apiKey: 'YOUR_OPENWEATHERMAP_API_KEY', // TODO: Replace with actual API key
+            apiKey: 'e5c0b5f0ed680b3c0c57f799ba8e7fc5', // TODO: Replace with actual API key
             city: 'London', // TODO: Replace with desired city name
             refreshInterval: 10 * 60 * 1000, // 10 minutes in milliseconds
             units: 'metric' // metric, imperial, or kelvin
@@ -867,16 +874,9 @@ class XFeedManager {
                         <i class="far fa-comment"></i>
                         <span>${post.replies}</span>
                     </div>
-                    <div class="post-action retweet ${post.isRetweeted ? 'retweeted' : ''}" onclick="xFeedManager.handleRetweet('${post.id}')">
-                        <i class="fas fa-retweet"></i>
-                        <span>${post.retweets}</span>
-                    </div>
                     <div class="post-action like ${post.isLiked ? 'liked' : ''}" onclick="xFeedManager.handleLike('${post.id}')">
                         <i class="${post.isLiked ? 'fas' : 'far'} fa-heart"></i>
                         <span>${post.likes}</span>
-                    </div>
-                    <div class="post-action share" onclick="xFeedManager.handleShare('${post.id}')">
-                        <i class="far fa-share-square"></i>
                     </div>
                 </div>
             </div>
@@ -1081,7 +1081,7 @@ class XFeedManager {
                 const suggestionDiv = document.createElement('div');
                 suggestionDiv.className = 'follow-suggestion fade-in';
                 suggestionDiv.innerHTML = `
-                    <img src="${user.avatar || 'https://via.placeholder.com/40/1DA1F2/ffffff?text=' + user.username.charAt(0).toUpperCase()}" alt="Profile" class="suggestion-avatar">
+                    <img src="https://cdn-icons-png.freepik.com/512/4159/4159471.png" alt="Profile" class="suggestion-avatar">
                     <div class="suggestion-info">
                         <div class="suggestion-name">${user.name || user.username}</div>
                         <div class="suggestion-handle">@${user.username}</div>
