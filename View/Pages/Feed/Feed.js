@@ -186,6 +186,7 @@ class XFeedManager {
         try {
             await this.loadCurrentUser();
             this.setupEventListeners();
+            this.checkBackendConnection();
             this.loadPosts();
             this.updateCharacterCount();
             this.initWeatherWidget();
@@ -220,6 +221,53 @@ class XFeedManager {
         }
     }
 
+    // Check backend connection status
+    async checkBackendConnection() {
+        const statusElement = document.getElementById('connection-status');
+        const statusIcon = document.getElementById('status-icon');
+        const statusText = document.getElementById('status-text');
+        
+        if (!statusElement || !statusIcon || !statusText) return;
+
+        // Show checking status
+        statusElement.style.display = 'block';
+        statusIcon.className = 'fas fa-circle checking';
+        statusText.textContent = 'Checking backend connection...';
+
+        try {
+            // Try to ping the backend
+            const response = await fetch(`${this.apiService.baseURL}/users/${this.currentUser.username}`, {
+                method: 'GET',
+                timeout: 5000
+            });
+
+            if (response.ok) {
+                // Backend is connected
+                statusIcon.className = 'fas fa-circle connected';
+                statusText.textContent = 'Backend connected';
+                this.backendConnected = true;
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 3000);
+            } else {
+                throw new Error('Backend responded with error');
+            }
+        } catch (error) {
+            // Backend is not connected
+            console.log('Backend not available:', error.message);
+            statusIcon.className = 'fas fa-circle disconnected';
+            statusText.textContent = 'Demo mode (backend not available)';
+            this.backendConnected = false;
+            
+            // Hide status after 5 seconds
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        }
+    }
+
     // Setup all event listeners
     setupEventListeners() {
         // Post composer
@@ -243,6 +291,12 @@ class XFeedManager {
         postSubmitBtn.addEventListener('click', () => this.handleCreatePost());
         mediaBtn.addEventListener('click', () => mediaInput.click());
         mediaInput.addEventListener('change', (e) => this.handleMediaPreview(e));
+        
+        // Remove media button
+        const removeMediaBtn = document.getElementById('remove-media-btn');
+        if (removeMediaBtn) {
+            removeMediaBtn.addEventListener('click', () => this.removeMediaPreview());
+        }
 
         // Search functionality
         const searchInput = document.getElementById('search-input');
@@ -755,7 +809,9 @@ class XFeedManager {
                         await this.createPostWithData(postData);
                     } catch (error) {
                         console.error('Error creating visual content:', error);
-                        // Create post without visual content
+                        // Create post without visual content but with media URL for fallback
+                        postData.media = e.target.result;
+                        postData.mediaType = visualContentData.mediaType;
                         await this.createPostWithData(postData);
                     }
                 };
@@ -776,7 +832,11 @@ class XFeedManager {
     // Helper method to create post with data
     async createPostWithData(postData) {
         try {
+            console.log('Attempting to create post with data:', postData);
+            console.log('API Base URL:', this.apiService.baseURL);
+            
             const response = await this.apiService.createPost(postData);
+            console.log('API Response:', response);
             
             if (response.error) {
                 throw new Error(response.error);
@@ -788,6 +848,7 @@ class XFeedManager {
             // Reset form
             document.getElementById('post-content').value = '';
             document.getElementById('media-input').value = '';
+            this.removeMediaPreview(); // This will also clear the preview
             this.updateCharacterCount();
             this.updatePostButton();
             
@@ -795,6 +856,70 @@ class XFeedManager {
             
         } catch (error) {
             console.error('Error creating post:', error);
+            
+            // Check if it's a network error (backend not running)
+            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                console.log('Backend not available, using fallback posting');
+                this.createPostFallback(postData);
+            } else {
+                this.showError(`Failed to create post: ${error.message}`);
+            }
+        }
+    }
+
+    // Fallback posting when backend is not available
+    createPostFallback(postData) {
+        try {
+            // Get media file if available
+            const mediaFile = document.getElementById('media-input').files[0];
+            let mediaUrl = null;
+            let mediaType = null;
+
+            if (mediaFile) {
+                // Create object URL for the media file
+                mediaUrl = URL.createObjectURL(mediaFile);
+                mediaType = mediaFile.type.startsWith('image/') ? 'image' : 
+                           mediaFile.type.startsWith('video/') ? 'video' : 'other';
+            }
+
+            // Create a mock post for demonstration
+            const mockPost = {
+                id: 'post-' + Date.now(),
+                content: postData.textContent,
+                author: {
+                    id: this.currentUser._id || this.currentUser.id,
+                    name: this.currentUser.name,
+                    username: this.currentUser.username,
+                    avatar: this.currentUser.avatar
+                },
+                createdAt: new Date().toISOString(),
+                media: mediaUrl,
+                mediaType: mediaType,
+                likes: 0,
+                retweets: 0,
+                replies: 0,
+                views: 0,
+                isLiked: false,
+                isRetweeted: false
+            };
+
+            // Add to posts array
+            this.posts.unshift(mockPost);
+            
+            // Re-render posts
+            this.renderPosts();
+            
+            // Reset form
+            document.getElementById('post-content').value = '';
+            document.getElementById('media-input').value = '';
+            this.removeMediaPreview(); // This will also clear the preview
+            this.updateCharacterCount();
+            this.updatePostButton();
+            
+            this.showSuccess('Post created successfully! (Demo mode - backend not available)');
+            
+        } catch (error) {
+            console.error('Error in fallback posting:', error);
             this.showError('Failed to create post. Please try again.');
         }
     }
@@ -864,9 +989,12 @@ class XFeedManager {
     async loadPosts() {
         try {
             this.setLoadingState(true);
+            console.log('Loading posts for user:', this.currentUser.username);
+            console.log('API Base URL:', this.apiService.baseURL);
             
             // Get posts from followed users
             const response = await this.apiService.getFeedPosts(this.currentUser.username);
+            console.log('Posts API Response:', response);
             
             if (response.error) {
                 throw new Error(response.error);
@@ -878,10 +1006,17 @@ class XFeedManager {
             
         } catch (error) {
             console.error('Error loading posts:', error);
-            this.showError('Failed to load posts');
             
-            // Fallback to mock data for demonstration
-            this.loadMockPosts();
+            // Check if it's a network error (backend not running)
+            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                console.log('Backend not available, using mock posts');
+                this.loadMockPosts();
+                this.showSuccess('Using demo posts (backend not available)');
+            } else {
+                this.showError(`Failed to load posts: ${error.message}`);
+                // Still load mock posts as fallback
+                this.loadMockPosts();
+            }
         } finally {
             this.setLoadingState(false);
         }
@@ -1177,12 +1312,71 @@ class XFeedManager {
         const file = event.target.files[0];
         if (!file) return;
 
+        // Validate file type
+        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+            this.showError('Please select an image or video file');
+            return;
+        }
+
+        // Validate file size (max 10MB)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+            this.showError('File size must be less than 10MB');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
-            console.log('Media file selected:', file.name);
+            console.log('Media file selected:', file.name, 'Type:', file.type);
+            this.showMediaPreview(e.target.result, file.type);
             this.updatePostButton();
         };
         reader.readAsDataURL(file);
+    }
+
+    // Show media preview in composer
+    showMediaPreview(dataUrl, mediaType) {
+        const previewContainer = document.getElementById('media-preview');
+        const previewImage = document.getElementById('media-preview-image');
+        const previewVideo = document.getElementById('media-preview-video');
+        
+        if (!previewContainer || !previewImage || !previewVideo) return;
+
+        // Hide both elements first
+        previewImage.style.display = 'none';
+        previewVideo.style.display = 'none';
+
+        if (mediaType.startsWith('image/')) {
+            previewImage.src = dataUrl;
+            previewImage.style.display = 'block';
+        } else if (mediaType.startsWith('video/')) {
+            previewVideo.src = dataUrl;
+            previewVideo.style.display = 'block';
+        }
+
+        // Show the preview container
+        previewContainer.style.display = 'block';
+    }
+
+    // Remove media preview
+    removeMediaPreview() {
+        const previewContainer = document.getElementById('media-preview');
+        const previewImage = document.getElementById('media-preview-image');
+        const previewVideo = document.getElementById('media-preview-video');
+        const mediaInput = document.getElementById('media-input');
+        
+        if (previewContainer) previewContainer.style.display = 'none';
+        if (previewImage) {
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+        }
+        if (previewVideo) {
+            previewVideo.src = '';
+            previewVideo.style.display = 'none';
+        }
+        if (mediaInput) mediaInput.value = '';
+        
+        this.updatePostButton();
     }
 
     // Update character count

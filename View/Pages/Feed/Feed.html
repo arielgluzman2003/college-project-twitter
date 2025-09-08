@@ -107,12 +107,34 @@
                     </div>
                 </header>
 
+                <!-- Connection Status -->
+                <div class="connection-status" id="connection-status" style="display: none;">
+                    <div class="status-indicator">
+                        <i class="fas fa-circle" id="status-icon"></i>
+                        <span id="status-text">Checking connection...</span>
+                    </div>
+                </div>
+
                 <!-- Create Post Section -->
                 <div class="post-composer">
                     <div class="composer-content">
                         <img src="https://via.placeholder.com/48/1DA1F2/ffffff?text=JD" alt="Profile" class="composer-avatar">
                         <div class="composer-input">
                             <textarea placeholder="What's happening?" id="post-content"></textarea>
+                            
+                            <!-- Media Preview Area -->
+                            <div class="media-preview" id="media-preview" style="display: none;">
+                                <div class="media-preview-content">
+                                    <img id="media-preview-image" src="" alt="Preview" style="display: none;">
+                                    <video id="media-preview-video" controls style="display: none;">
+                                        <source src="" type="video/mp4">
+                                    </video>
+                                    <button class="remove-media-btn" id="remove-media-btn" title="Remove media">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
                             <div class="composer-actions">
                                 <div class="action-buttons">
                                     <button class="action-btn" id="media-btn">

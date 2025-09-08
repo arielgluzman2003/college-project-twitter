@@ -1,0 +1,26 @@
+{
+  "name": "college-project-twitter",
+  "version": "1.0.0",
+  "description": "Academic Social Network with MongoDB, Express, and X Platform UI",
+  "main": "Model/app.js",
+  "scripts": {
+    "start": "node Model/app.js",
+    "dev": "nodemon Model/app.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^6.0.0",
+    "dotenv": "^16.0.0",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "author": "Your Name",
+  "license": "ISC"
+}
