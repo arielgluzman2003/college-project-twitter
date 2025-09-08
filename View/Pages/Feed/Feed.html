@@ -1,747 +1,899 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>X / Twitter Clone</title>
-    
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="Feed.css">
-    
+    <link rel="stylesheet" href="Feed.css" />
+
     <!-- Custom Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <!-- Main Container -->
     <div class="x-container">
-        <!-- Left Sidebar -->
-        <aside class="x-sidebar left-sidebar">
-            <div class="sidebar-content">
-                <!-- X Logo -->
-                <div class="x-logo">
-                    <i class="fab fa-x-twitter"></i>
+      <!-- Left Sidebar -->
+      <aside class="x-sidebar left-sidebar">
+        <div class="sidebar-content">
+          <!-- X Logo -->
+          <div class="x-logo">
+            <i class="fab fa-x-twitter"></i>
+          </div>
+
+          <!-- Navigation Menu -->
+          <nav class="x-nav">
+            <a href="#" class="nav-item active" data-section="home">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-section="explore">
+              <i class="fas fa-search"></i>
+              <span>Explore</span>
+            </a>
+            <a href="#" class="nav-item" data-section="profile">
+              <i class="fas fa-user"></i>
+              <span>Profile</span>
+            </a>
+          </nav>
+
+          <!-- Post Button -->
+          <button class="x-post-btn">
+            <span>Post</span>
+          </button>
+
+          <!-- User Profile -->
+          <div class="user-profile">
+            <img
+              src="https://via.placeholder.com/40/1DA1F2/ffffff?text=JD"
+              alt="Profile"
+              class="profile-avatar"
+            />
+            <div class="profile-info">
+              <div class="profile-name">John Doe</div>
+              <div class="profile-handle">@johndoe</div>
+            </div>
+            <i class="fa-solid fa-door-open" onclick="logOut()"></i>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="x-main">
+        <!-- Home Section -->
+        <section id="home-section" class="content-section active">
+          <!-- Header -->
+          <header class="x-header">
+            <div class="header-content">
+              <h1>Home</h1>
+            </div>
+          </header>
+
+          <!-- Create Post Section -->
+          <div class="post-composer">
+            <div class="composer-content">
+              <img
+                src="https://via.placeholder.com/48/1DA1F2/ffffff?text=JD"
+                alt="Profile"
+                class="composer-avatar"
+              />
+              <div class="composer-input">
+                <textarea
+                  placeholder="What's happening?"
+                  id="post-content"
+                ></textarea>
+                <input
+                  type="file"
+                  id="media-input"
+                  accept="image/*,video/*"
+                  style="display: none"
+                />
+                <img
+                  id="image-preview"
+                  style="max-width: 100%; display: none"
+                  alt="Image Preview"
+                />
+
+                <div class="composer-actions">
+                  <div class="action-buttons">
+                    <button class="action-btn" id="media-btn">
+                      <i class="fas fa-image"></i>
+                    </button>
+                    <button class="action-btn" onclick="getLocation()">
+                      <i class="fas fa-map-marker-alt"></i>
+                    </button>
+                  </div>
+                  <button class="post-submit-btn" id="post-submit-btn" onclick="createPostWithData()">
+                    Post
+                  </button>
                 </div>
-                
-                <!-- Navigation Menu -->
-                <nav class="x-nav">
-                    <a href="#" class="nav-item active" data-section="home">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
-                    </a>
-                    <a href="#" class="nav-item" data-section="explore">
-                        <i class="fas fa-search"></i>
-                        <span>Explore</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-bell"></i>
-                        <span>Notifications</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>Messages</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-list"></i>
-                        <span>Lists</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-bookmark"></i>
-                        <span>Bookmarks</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-users"></i>
-                        <span>Communities</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fab fa-x-twitter"></i>
-                        <span>Premium</span>
-                    </a>
-                    <a href="#" class="nav-item" data-section="profile">
-                        <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-ellipsis-h"></i>
-                        <span>More</span>
-                    </a>
-                </nav>
-                
-                <!-- Post Button -->
-                <button class="x-post-btn">
-                    <span>Post</span>
+              </div>
+            </div>
+            <input
+              type="file"
+              id="media-input"
+              accept="image/*,video/*"
+              style="display: none"
+            />
+          </div>
+
+          <!-- Posts Feed -->
+          <div class="posts-feed" id="posts-container">
+            <!-- Posts will be dynamically loaded here -->
+          </div>
+        </section>
+
+        <!-- Explore Section -->
+        <section id="explore-section" class="content-section">
+          <!-- Explore Header -->
+          <header class="x-header">
+            <div class="header-content">
+              <div class="explore-search-container">
+                <div class="explore-search-box">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    id="explore-search-input"
+                  />
+                </div>
+              </div>
+              <div class="explore-tabs">
+                <button class="explore-tab-btn active" data-category="for-you">
+                  For you
                 </button>
-                
-                <!-- User Profile -->
-                <div class="user-profile">
-                    <img src="https://via.placeholder.com/40/1DA1F2/ffffff?text=JD" alt="Profile" class="profile-avatar">
-                    <div class="profile-info">
-                        <div class="profile-name">John Doe</div>
-                        <div class="profile-handle">@johndoe</div>
-                    </div>
-                    <i class="fas fa-ellipsis-h"></i>
-                </div>
+                <button class="explore-tab-btn" data-category="trending">
+                  Trending
+                </button>
+                <button class="explore-tab-btn" data-category="news">
+                  News
+                </button>
+                <button class="explore-tab-btn" data-category="sports">
+                  Sports
+                </button>
+                <button class="explore-tab-btn" data-category="weather">
+                  Weather
+                </button>
+                <button class="explore-tab-btn" data-category="maps">
+                  Maps
+                </button>
+              </div>
             </div>
-        </aside>
+          </header>
 
-        <!-- Main Content -->
-        <main class="x-main">
-            <!-- Home Section -->
-            <section id="home-section" class="content-section active">
-                <!-- Header -->
-                <header class="x-header">
-                    <div class="header-content">
-                        <h1>Home</h1>
-                        <div class="header-tabs">
-                            <button class="tab-btn active">For you</button>
-                            <button class="tab-btn">Following</button>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Create Post Section -->
-                <div class="post-composer">
-                    <div class="composer-content">
-                        <img src="https://via.placeholder.com/48/1DA1F2/ffffff?text=JD" alt="Profile" class="composer-avatar">
-                        <div class="composer-input">
-                            <textarea placeholder="What's happening?" id="post-content"></textarea>
-                            <div class="composer-actions">
-                                <div class="action-buttons">
-                                    <button class="action-btn" id="media-btn">
-                                        <i class="fas fa-image"></i>
-                                    </button>
-                                    <button class="action-btn">
-                                        <i class="fas fa-poll-h"></i>
-                                    </button>
-                                    <button class="action-btn">
-                                        <i class="fas fa-smile"></i>
-                                    </button>
-                                    <button class="action-btn">
-                                        <i class="fas fa-calendar"></i>
-                                    </button>
-                                    <button class="action-btn">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </button>
-                                </div>
-                                <button class="post-submit-btn" id="post-submit-btn" disabled>
-                                    Post
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <input type="file" id="media-input" accept="image/*,video/*" style="display: none;">
+          <!-- Explore Content -->
+          <div class="explore-content">
+            <!-- For You Content -->
+            <div id="for-you-content" class="explore-category-content active">
+              <div class="today-news">
+                <h3>Today's News</h3>
+                <div class="news-item">
+                  <div class="news-category">Technology</div>
+                  <div class="news-title">
+                    AI Breakthrough in Machine Learning Research
+                  </div>
+                  <div class="news-stats">2.5K posts</div>
                 </div>
-
-                <!-- Posts Feed -->
-                <div class="posts-feed" id="posts-container">
-                    <!-- Posts will be dynamically loaded here -->
+                <div class="news-item">
+                  <div class="news-category">Science</div>
+                  <div class="news-title">
+                    New Discovery in Quantum Computing
+                  </div>
+                  <div class="news-stats">1.8K posts</div>
                 </div>
-            </section>
-
-            <!-- Explore Section -->
-            <section id="explore-section" class="content-section">
-                <!-- Explore Header -->
-                <header class="x-header">
-                    <div class="header-content">
-                        <div class="explore-search-container">
-                            <div class="explore-search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" placeholder="Search" id="explore-search-input">
-                            </div>
-                        </div>
-                        <div class="explore-tabs">
-                            <button class="explore-tab-btn active" data-category="for-you">For you</button>
-                            <button class="explore-tab-btn" data-category="trending">Trending</button>
-                            <button class="explore-tab-btn" data-category="news">News</button>
-                            <button class="explore-tab-btn" data-category="sports">Sports</button>
-                            <button class="explore-tab-btn" data-category="weather">Weather</button>
-                            <button class="explore-tab-btn" data-category="maps">Maps</button>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Explore Content -->
-                <div class="explore-content">
-                    <!-- For You Content -->
-                    <div id="for-you-content" class="explore-category-content active">
-                        <div class="today-news">
-                            <h3>Today's News</h3>
-                            <div class="news-item">
-                                <div class="news-category">Technology</div>
-                                <div class="news-title">AI Breakthrough in Machine Learning Research</div>
-                                <div class="news-stats">2.5K posts</div>
-                            </div>
-                            <div class="news-item">
-                                <div class="news-category">Science</div>
-                                <div class="news-title">New Discovery in Quantum Computing</div>
-                                <div class="news-stats">1.8K posts</div>
-                            </div>
-                            <div class="news-item">
-                                <div class="news-category">Education</div>
-                                <div class="news-title">Online Learning Platforms See Record Growth</div>
-                                <div class="news-stats">3.2K posts</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Trending Content -->
-                    <div id="trending-content" class="explore-category-content">
-                        <div class="trending-posts">
-                            <h3>Trending Now</h3>
-                            <div class="trending-post">
-                                <div class="trending-post-header">
-                                    <span class="trending-post-author">Tech News</span>
-                                    <span class="trending-post-time">2h</span>
-                                </div>
-                                <div class="trending-post-content">#JavaScript remains the most popular programming language in 2024 according to latest developer surveys</div>
-                                <div class="trending-post-stats">15.2K posts</div>
-                            </div>
-                            <div class="trending-post">
-                                <div class="trending-post-header">
-                                    <span class="trending-post-author">Web Dev</span>
-                                    <span class="trending-post-time">4h</span>
-                                </div>
-                                <div class="trending-post-content">React 19 is coming with amazing new features! #React #WebDevelopment</div>
-                                <div class="trending-post-stats">8.7K posts</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- News Content -->
-                    <div id="news-content" class="explore-category-content">
-                        <div class="news-posts">
-                            <h3>Latest News</h3>
-                            <div class="news-post">
-                                <div class="news-post-header">
-                                    <span class="news-post-source">CNN</span>
-                                    <span class="news-post-time">1h</span>
-                                </div>
-                                <div class="news-post-title">Global Tech Summit Announces New AI Regulations</div>
-                                <div class="news-post-excerpt">World leaders gather to discuss the future of artificial intelligence...</div>
-                                <div class="news-post-stats">5.3K posts</div>
-                            </div>
-                            <div class="news-post">
-                                <div class="news-post-header">
-                                    <span class="news-post-source">BBC</span>
-                                    <span class="news-post-time">3h</span>
-                                </div>
-                                <div class="news-post-title">Climate Change Conference Sets New Targets</div>
-                                <div class="news-post-excerpt">International agreement reached on carbon emission reductions...</div>
-                                <div class="news-post-stats">4.1K posts</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sports Content -->
-                    <div id="sports-content" class="explore-category-content">
-                        <div class="sports-posts">
-                            <h3>Sports Updates</h3>
-                            <div class="sports-post">
-                                <div class="sports-post-header">
-                                    <span class="sports-post-league">NBA</span>
-                                    <span class="sports-post-time">30m</span>
-                                </div>
-                                <div class="sports-post-title">Lakers vs Warriors: Final Score 112-108</div>
-                                <div class="sports-post-excerpt">LeBron James leads Lakers to victory with 32 points...</div>
-                                <div class="sports-post-stats">12.8K posts</div>
-                            </div>
-                            <div class="sports-post">
-                                <div class="sports-post-header">
-                                    <span class="sports-post-league">Premier League</span>
-                                    <span class="sports-post-time">2h</span>
-                                </div>
-                                <div class="sports-post-title">Manchester United Signs New Star Player</div>
-                                <div class="sports-post-excerpt">Club announces record-breaking transfer deal...</div>
-                                <div class="sports-post-stats">9.4K posts</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Weather Content -->
-                    <div id="weather-content" class="explore-category-content">
-                        <div class="weather-section">
-                            <div class="weather-header">
-                                <h3><i class="fas fa-cloud-sun me-2"></i>Current Weather</h3>
-                                <button class="weather-refresh-btn" id="weather-refresh-btn" title="Refresh weather">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Loading State -->
-                            <div id="weather-loading" class="weather-loading">
-                                <div class="weather-spinner">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
-                                <p>Loading weather data...</p>
-                            </div>
-                            
-                            <!-- Weather Content -->
-                            <div id="weather-display" class="weather-display" style="display: none;">
-                                <div class="weather-main-info">
-                                    <div class="weather-location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span id="weather-city">City Name</span>
-                                    </div>
-                                    
-                                    <div class="weather-current">
-                                        <div class="weather-icon-large">
-                                            <img id="weather-icon" src="" alt="Weather icon">
-                                        </div>
-                                        <div class="weather-temp-large">
-                                            <span id="weather-temperature">--</span>°C
-                                        </div>
-                                        <div class="weather-description-large">
-                                            <span id="weather-description">Weather description</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="weather-details-grid">
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-thermometer-half"></i>
-                                            <div class="detail-label">Feels like</div>
-                                            <div class="detail-value"><span id="weather-feels-like">--</span>°C</div>
-                                        </div>
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-tint"></i>
-                                            <div class="detail-label">Humidity</div>
-                                            <div class="detail-value"><span id="weather-humidity">--</span>%</div>
-                                        </div>
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-wind"></i>
-                                            <div class="detail-label">Wind Speed</div>
-                                            <div class="detail-value"><span id="weather-wind">--</span> km/h</div>
-                                        </div>
-                                        <div class="weather-detail-card">
-                                            <i class="fas fa-eye"></i>
-                                            <div class="detail-label">Visibility</div>
-                                            <div class="detail-value"><span id="weather-visibility">--</span> km</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="weather-updated">
-                                        <small>Last updated: <span id="weather-updated-time">--</span></small>
-                                    </div>
-                                </div>
-                                
-                                <!-- Weather Forecast (placeholder) -->
-                                <div class="weather-forecast">
-                                    <h4>5-Day Forecast</h4>
-                                    <div class="forecast-items">
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Today</div>
-                                            <div class="forecast-icon">☀️</div>
-                                            <div class="forecast-temp">22°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Tomorrow</div>
-                                            <div class="forecast-icon">⛅</div>
-                                            <div class="forecast-temp">20°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Wed</div>
-                                            <div class="forecast-icon">🌧️</div>
-                                            <div class="forecast-temp">18°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Thu</div>
-                                            <div class="forecast-icon">☀️</div>
-                                            <div class="forecast-temp">24°C</div>
-                                        </div>
-                                        <div class="forecast-item">
-                                            <div class="forecast-day">Fri</div>
-                                            <div class="forecast-icon">⛅</div>
-                                            <div class="forecast-temp">21°C</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Error State -->
-                            <div id="weather-error" class="weather-error" style="display: none;">
-                                <div class="weather-error-icon">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                                <p id="weather-error-message">Unable to load weather data</p>
-                                <button class="weather-retry-btn" id="weather-retry-btn">
-                                    <i class="fas fa-redo"></i> Try Again
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Maps Content -->
-                    <div id="maps-content" class="explore-category-content">
-                        <div class="maps-section">
-                            <div class="maps-header">
-                                <h3><i class="fas fa-map-marked-alt me-2"></i>Interactive Map</h3>
-                                <div class="maps-controls">
-                                    <button class="maps-control-btn" id="maps-add-location-btn" title="Add Location">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                    <button class="maps-control-btn" id="maps-refresh-btn" title="Refresh Map">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Map Container -->
-                            <div class="maps-container">
-                                <div id="google-map" class="google-map">
-                                    <!-- Google Maps will be loaded here -->
-                                    <div class="map-placeholder">
-                                        <i class="fas fa-map-marked-alt"></i>
-                                        <h4>Interactive Map</h4>
-                                        <p>Loading Google Maps...</p>
-                                        <small>Map will display locations from posts and allow location management</small>
-                                    </div>
-                                </div>
-                                
-                                <!-- Map Controls -->
-                                <div class="map-controls-panel">
-                                    <div class="map-control-group">
-                                        <label for="map-search-input">Search Location:</label>
-                                        <div class="map-search-container">
-                                            <input type="text" id="map-search-input" placeholder="Enter city, address, or coordinates">
-                                            <button id="map-search-btn">
-                                                <i class="fas fa-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="map-control-group">
-                                        <label>Map Type:</label>
-                                        <div class="map-type-buttons">
-                                            <button class="map-type-btn active" data-type="roadmap">Road</button>
-                                            <button class="map-type-btn" data-type="satellite">Satellite</button>
-                                            <button class="map-type-btn" data-type="hybrid">Hybrid</button>
-                                            <button class="map-type-btn" data-type="terrain">Terrain</button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="map-control-group">
-                                        <label>Zoom Level:</label>
-                                        <div class="zoom-controls">
-                                            <button id="map-zoom-in">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                            <span id="map-zoom-level">10</span>
-                                            <button id="map-zoom-out">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Location List -->
-                                <div class="locations-panel">
-                                    <h4><i class="fas fa-map-pin"></i> Saved Locations</h4>
-                                    <div id="locations-list" class="locations-list">
-                                        <div class="location-item">
-                                            <div class="location-info">
-                                                <div class="location-name">San Francisco, CA</div>
-                                                <div class="location-coords">37.7749° N, 122.4194° W</div>
-                                            </div>
-                                            <div class="location-actions">
-                                                <button class="location-action-btn" title="View on Map">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="location-action-btn" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="location-item">
-                                            <div class="location-info">
-                                                <div class="location-name">New York, NY</div>
-                                                <div class="location-coords">40.7128° N, 74.0060° W</div>
-                                            </div>
-                                            <div class="location-actions">
-                                                <button class="location-action-btn" title="View on Map">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="location-action-btn" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="location-item">
-                                            <div class="location-info">
-                                                <div class="location-name">London, UK</div>
-                                                <div class="location-coords">51.5074° N, 0.1278° W</div>
-                                            </div>
-                                            <div class="location-actions">
-                                                <button class="location-action-btn" title="View on Map">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="location-action-btn" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="add-location-section">
-                                        <button class="add-location-btn" id="add-location-btn">
-                                            <i class="fas fa-plus"></i> Add New Location
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Add Location Modal -->
-                            <div id="add-location-modal" class="modal" style="display: none;">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h3>Add New Location</h3>
-                                        <button class="modal-close" id="modal-close-btn">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label for="location-name-input">Location Name:</label>
-                                            <input type="text" id="location-name-input" placeholder="Enter location name">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="location-address-input">Address:</label>
-                                            <input type="text" id="location-address-input" placeholder="Enter full address">
-                                        </div>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="location-lat-input">Latitude:</label>
-                                                <input type="number" id="location-lat-input" step="any" placeholder="e.g., 37.7749">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="location-lng-input">Longitude:</label>
-                                                <input type="number" id="location-lng-input" step="any" placeholder="e.g., -122.4194">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="location-description-input">Description (optional):</label>
-                                            <textarea id="location-description-input" placeholder="Add a description for this location"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
-                                        <button class="btn btn-primary" id="modal-save-btn">Save Location</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="news-item">
+                  <div class="news-category">Education</div>
+                  <div class="news-title">
+                    Online Learning Platforms See Record Growth
+                  </div>
+                  <div class="news-stats">3.2K posts</div>
                 </div>
-            </section>
-
-            <!-- Profile Section -->
-            <section id="profile-section" class="content-section">
-                <!-- Profile Header -->
-                <header class="x-header">
-                    <div class="header-content">
-                        <div class="profile-header-nav">
-                            <button class="back-btn" id="profile-back-btn">
-                                <i class="fas fa-arrow-left"></i>
-                            </button>
-                            <div class="profile-header-info">
-                                <h1 id="profile-display-name">John Doe</h1>
-                                <span id="profile-post-count">1,234 posts</span>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Profile Cover Photo -->
-                <div class="profile-cover">
-                    <img src="https://via.placeholder.com/600x200/1DA1F2/ffffff?text=Cover+Photo" alt="Cover Photo" id="profile-cover-photo">
-                    <button class="edit-cover-btn" id="edit-cover-btn">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                </div>
-
-                <!-- Profile Info Section -->
-                <div class="profile-info-section">
-                    <div class="profile-avatar-container">
-                        <img src="https://via.placeholder.com/120/1DA1F2/ffffff?text=JD" alt="Profile Picture" id="profile-avatar" class="profile-avatar-large">
-                        <button class="edit-avatar-btn" id="edit-avatar-btn">
-                            <i class="fas fa-camera"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="profile-actions">
-                        <button class="edit-profile-btn" id="edit-profile-btn">
-                            Edit profile
-                        </button>
-                    </div>
-
-                    <div class="profile-details">
-                        <h2 id="profile-name">John Doe</h2>
-                        <p id="profile-username">@johndoe</p>
-                        <p id="profile-bio">Software Developer | Tech Enthusiast | Coffee Lover ☕ | Building the future one line of code at a time 🚀</p>
-                        
-                        <div class="profile-meta">
-                            <div class="profile-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span id="profile-location">San Francisco, CA</span>
-                            </div>
-                            <div class="profile-website">
-                                <i class="fas fa-link"></i>
-                                <a href="#" id="profile-website">johndoe.dev</a>
-                            </div>
-                            <div class="profile-join-date">
-                                <i class="fas fa-calendar"></i>
-                                <span id="profile-join-date">Joined March 2020</span>
-                            </div>
-                        </div>
-
-                        <div class="profile-stats">
-                            <div class="stat-item">
-                                <span class="stat-number" id="profile-following-count">1,234</span>
-                                <span class="stat-label">Following</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" id="profile-followers-count">5,678</span>
-                                <span class="stat-label">Followers</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Profile Tabs -->
-                <div class="profile-tabs">
-                    <button class="profile-tab-btn active" data-tab="posts">
-                        <span>Posts</span>
-                    </button>
-                    <button class="profile-tab-btn" data-tab="replies">
-                        <span>Replies</span>
-                    </button>
-                    <button class="profile-tab-btn" data-tab="media">
-                        <span>Media</span>
-                    </button>
-                    <button class="profile-tab-btn" data-tab="likes">
-                        <span>Likes</span>
-                    </button>
-                </div>
-
-                <!-- Profile Content -->
-                <div class="profile-content">
-                    <!-- Posts Tab -->
-                    <div id="profile-posts" class="profile-tab-content active">
-                        <div class="posts-feed" id="profile-posts-container">
-                            <!-- User's posts will be loaded here -->
-                        </div>
-                    </div>
-
-                    <!-- Replies Tab -->
-                    <div id="profile-replies" class="profile-tab-content">
-                        <div class="empty-state">
-                            <i class="fas fa-comment"></i>
-                            <h3>No replies yet</h3>
-                            <p>When you reply to someone, it will show up here.</p>
-                        </div>
-                    </div>
-
-                    <!-- Media Tab -->
-                    <div id="profile-media" class="profile-tab-content">
-                        <div class="media-grid" id="profile-media-grid">
-                            <!-- User's media will be loaded here -->
-                        </div>
-                    </div>
-
-                    <!-- Likes Tab -->
-                    <div id="profile-likes" class="profile-tab-content">
-                        <div class="empty-state">
-                            <i class="fas fa-heart"></i>
-                            <h3>No likes yet</h3>
-                            <p>Posts you like will show up here.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Right Sidebar -->
-        <aside class="x-sidebar right-sidebar">
-            <div class="sidebar-content">
-                <!-- Search Bar -->
-                <div class="search-container">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search" id="search-input">
-                    </div>
-                </div>
-
-
-                <!-- Trending Section -->
-                <div class="trending-section">
-                    <h3>Trends for you</h3>
-                    <div class="trending-item">
-                        <div class="trending-category">Trending in Technology</div>
-                        <div class="trending-tag">#JavaScript</div>
-                        <div class="trending-count">50.5K posts</div>
-                    </div>
-                    <div class="trending-item">
-                        <div class="trending-category">Trending in Science</div>
-                        <div class="trending-tag">#AI</div>
-                        <div class="trending-count">25.2K posts</div>
-                    </div>
-                    <div class="trending-item">
-                        <div class="trending-category">Trending in Education</div>
-                        <div class="trending-tag">#Coding</div>
-                        <div class="trending-count">15.8K posts</div>
-                    </div>
-                </div>
-
-                <!-- Who to follow -->
-                <div class="who-to-follow">
-                    <h3>Who to follow</h3>
-                    <div class="follow-suggestion">
-                        <img src="https://via.placeholder.com/40/28a745/ffffff?text=JS" alt="Profile" class="suggestion-avatar">
-                        <div class="suggestion-info">
-                            <div class="suggestion-name">Jane Smith</div>
-                            <div class="suggestion-handle">@janesmith</div>
-                        </div>
-                        <button class="follow-btn">Follow</button>
-                    </div>
-                    <div class="follow-suggestion">
-                        <img src="https://via.placeholder.com/40/dc3545/ffffff?text=BW" alt="Profile" class="suggestion-avatar">
-                        <div class="suggestion-info">
-                            <div class="suggestion-name">Bob Wilson</div>
-                            <div class="suggestion-handle">@bobwilson</div>
-                        </div>
-                        <button class="follow-btn">Follow</button>
-                    </div>
-                </div>
-
-                <!-- Footer Links -->
-                <div class="sidebar-footer">
-                    <div class="footer-links">
-                        <a href="#">Terms of Service</a>
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Cookie Policy</a>
-                        <a href="#">Accessibility</a>
-                        <a href="#">Ads info</a>
-                        <a href="#">More</a>
-                    </div>
-                    <div class="copyright">© 2024 X Corp.</div>
-                </div>
+              </div>
             </div>
-        </aside>
+
+            <!-- Trending Content -->
+            <div id="trending-content" class="explore-category-content">
+              <div class="trending-posts">
+                <h3>Trending Now</h3>
+                <div class="trending-post">
+                  <div class="trending-post-header">
+                    <span class="trending-post-author">Tech News</span>
+                    <span class="trending-post-time">2h</span>
+                  </div>
+                  <div class="trending-post-content">
+                    #JavaScript remains the most popular programming language in
+                    2024 according to latest developer surveys
+                  </div>
+                  <div class="trending-post-stats">15.2K posts</div>
+                </div>
+                <div class="trending-post">
+                  <div class="trending-post-header">
+                    <span class="trending-post-author">Web Dev</span>
+                    <span class="trending-post-time">4h</span>
+                  </div>
+                  <div class="trending-post-content">
+                    React 19 is coming with amazing new features! #React
+                    #WebDevelopment
+                  </div>
+                  <div class="trending-post-stats">8.7K posts</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- News Content -->
+            <div id="news-content" class="explore-category-content">
+              <div class="news-posts">
+                <h3>Latest News</h3>
+                <div class="news-post">
+                  <div class="news-post-header">
+                    <span class="news-post-source">CNN</span>
+                    <span class="news-post-time">1h</span>
+                  </div>
+                  <div class="news-post-title">
+                    Global Tech Summit Announces New AI Regulations
+                  </div>
+                  <div class="news-post-excerpt">
+                    World leaders gather to discuss the future of artificial
+                    intelligence...
+                  </div>
+                  <div class="news-post-stats">5.3K posts</div>
+                </div>
+                <div class="news-post">
+                  <div class="news-post-header">
+                    <span class="news-post-source">BBC</span>
+                    <span class="news-post-time">3h</span>
+                  </div>
+                  <div class="news-post-title">
+                    Climate Change Conference Sets New Targets
+                  </div>
+                  <div class="news-post-excerpt">
+                    International agreement reached on carbon emission
+                    reductions...
+                  </div>
+                  <div class="news-post-stats">4.1K posts</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sports Content -->
+            <div id="sports-content" class="explore-category-content">
+              <div class="sports-posts">
+                <h3>Sports Updates</h3>
+                <div class="sports-post">
+                  <div class="sports-post-header">
+                    <span class="sports-post-league">NBA</span>
+                    <span class="sports-post-time">30m</span>
+                  </div>
+                  <div class="sports-post-title">
+                    Lakers vs Warriors: Final Score 112-108
+                  </div>
+                  <div class="sports-post-excerpt">
+                    LeBron James leads Lakers to victory with 32 points...
+                  </div>
+                  <div class="sports-post-stats">12.8K posts</div>
+                </div>
+                <div class="sports-post">
+                  <div class="sports-post-header">
+                    <span class="sports-post-league">Premier League</span>
+                    <span class="sports-post-time">2h</span>
+                  </div>
+                  <div class="sports-post-title">
+                    Manchester United Signs New Star Player
+                  </div>
+                  <div class="sports-post-excerpt">
+                    Club announces record-breaking transfer deal...
+                  </div>
+                  <div class="sports-post-stats">9.4K posts</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Weather Content -->
+            <div id="weather-content" class="explore-category-content">
+              <div class="weather-section">
+                <div class="weather-header">
+                  <h3><i class="fas fa-cloud-sun me-2"></i>Current Weather</h3>
+                  <button
+                    class="weather-refresh-btn"
+                    id="weather-refresh-btn"
+                    title="Refresh weather"
+                  >
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="weather-loading" class="weather-loading">
+                  <div class="weather-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                  </div>
+                  <p>Loading weather data...</p>
+                </div>
+
+                <!-- Weather Content -->
+                <div
+                  id="weather-display"
+                  class="weather-display"
+                  style="display: none"
+                >
+                  <div class="weather-main-info">
+                    <div class="weather-location">
+                      <i class="fas fa-map-marker-alt"></i>
+                      <span id="weather-city">City Name</span>
+                    </div>
+
+                    <div class="weather-current">
+                      <div class="weather-icon-large">
+                        <img id="weather-icon" src="" alt="Weather icon" />
+                      </div>
+                      <div class="weather-temp-large">
+                        <span id="weather-temperature">--</span>°C
+                      </div>
+                      <div class="weather-description-large">
+                        <span id="weather-description"
+                          >Weather description</span
+                        >
+                      </div>
+                    </div>
+
+                    <div class="weather-details-grid">
+                      <div class="weather-detail-card">
+                        <i class="fas fa-thermometer-half"></i>
+                        <div class="detail-label">Feels like</div>
+                        <div class="detail-value">
+                          <span id="weather-feels-like">--</span>°C
+                        </div>
+                      </div>
+                      <div class="weather-detail-card">
+                        <i class="fas fa-tint"></i>
+                        <div class="detail-label">Humidity</div>
+                        <div class="detail-value">
+                          <span id="weather-humidity">--</span>%
+                        </div>
+                      </div>
+                      <div class="weather-detail-card">
+                        <i class="fas fa-wind"></i>
+                        <div class="detail-label">Wind Speed</div>
+                        <div class="detail-value">
+                          <span id="weather-wind">--</span> km/h
+                        </div>
+                      </div>
+                      <div class="weather-detail-card">
+                        <i class="fas fa-eye"></i>
+                        <div class="detail-label">Visibility</div>
+                        <div class="detail-value">
+                          <span id="weather-visibility">--</span> km
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="weather-updated">
+                      <small
+                        >Last updated:
+                        <span id="weather-updated-time">--</span></small
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Weather Forecast (placeholder) -->
+                  <div class="weather-forecast">
+                    <h4>5-Day Forecast</h4>
+                    <div class="forecast-items">
+                      <div class="forecast-item">
+                        <div class="forecast-day">Today</div>
+                        <div class="forecast-icon">☀️</div>
+                        <div class="forecast-temp">22°C</div>
+                      </div>
+                      <div class="forecast-item">
+                        <div class="forecast-day">Tomorrow</div>
+                        <div class="forecast-icon">⛅</div>
+                        <div class="forecast-temp">20°C</div>
+                      </div>
+                      <div class="forecast-item">
+                        <div class="forecast-day">Wed</div>
+                        <div class="forecast-icon">🌧️</div>
+                        <div class="forecast-temp">18°C</div>
+                      </div>
+                      <div class="forecast-item">
+                        <div class="forecast-day">Thu</div>
+                        <div class="forecast-icon">☀️</div>
+                        <div class="forecast-temp">24°C</div>
+                      </div>
+                      <div class="forecast-item">
+                        <div class="forecast-day">Fri</div>
+                        <div class="forecast-icon">⛅</div>
+                        <div class="forecast-temp">21°C</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Error State -->
+                <div
+                  id="weather-error"
+                  class="weather-error"
+                  style="display: none"
+                >
+                  <div class="weather-error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <p id="weather-error-message">Unable to load weather data</p>
+                  <button class="weather-retry-btn" id="weather-retry-btn">
+                    <i class="fas fa-redo"></i> Try Again
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Maps Content -->
+            <div id="maps-content" class="explore-category-content">
+              <div class="maps-section">
+                <div class="maps-header">
+                  <h3>
+                    <i class="fas fa-map-marked-alt me-2"></i>Interactive Map
+                  </h3>
+                  <div class="maps-controls">
+                    <button
+                      class="maps-control-btn"
+                      id="maps-add-location-btn"
+                      title="Add Location"
+                    >
+                      <i class="fas fa-plus"></i>
+                    </button>
+                    <button
+                      class="maps-control-btn"
+                      id="maps-refresh-btn"
+                      title="Refresh Map"
+                    >
+                      <i class="fas fa-sync-alt"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Map Container -->
+                <div class="maps-container">
+                  <div id="google-map" class="google-map">
+                    <!-- Google Maps will be loaded here -->
+                    <div class="map-placeholder">
+                      <i class="fas fa-map-marked-alt"></i>
+                      <h4>Interactive Map</h4>
+                      <p>Loading Google Maps...</p>
+                      <small
+                        >Map will display locations from posts and allow
+                        location management</small
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Map Controls -->
+                  <div class="map-controls-panel">
+                    <div class="map-control-group">
+                      <label for="map-search-input">Search Location:</label>
+                      <div class="map-search-container">
+                        <input
+                          type="text"
+                          id="map-search-input"
+                          placeholder="Enter city, address, or coordinates"
+                        />
+                        <button id="map-search-btn">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="map-control-group">
+                      <label>Map Type:</label>
+                      <div class="map-type-buttons">
+                        <button class="map-type-btn active" data-type="roadmap">
+                          Road
+                        </button>
+                        <button class="map-type-btn" data-type="satellite">
+                          Satellite
+                        </button>
+                        <button class="map-type-btn" data-type="hybrid">
+                          Hybrid
+                        </button>
+                        <button class="map-type-btn" data-type="terrain">
+                          Terrain
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="map-control-group">
+                      <label>Zoom Level:</label>
+                      <div class="zoom-controls">
+                        <button id="map-zoom-in">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                        <span id="map-zoom-level">10</span>
+                        <button id="map-zoom-out">
+                          <i class="fas fa-minus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Location List -->
+                  <div class="locations-panel">
+                    <h4><i class="fas fa-map-pin"></i> Saved Locations</h4>
+                    <div id="locations-list" class="locations-list">
+                      <div class="location-item">
+                        <div class="location-info">
+                          <div class="location-name">San Francisco, CA</div>
+                          <div class="location-coords">
+                            37.7749° N, 122.4194° W
+                          </div>
+                        </div>
+                        <div class="location-actions">
+                          <button
+                            class="location-action-btn"
+                            title="View on Map"
+                          >
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="location-action-btn" title="Delete">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="location-item">
+                        <div class="location-info">
+                          <div class="location-name">New York, NY</div>
+                          <div class="location-coords">
+                            40.7128° N, 74.0060° W
+                          </div>
+                        </div>
+                        <div class="location-actions">
+                          <button
+                            class="location-action-btn"
+                            title="View on Map"
+                          >
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="location-action-btn" title="Delete">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="location-item">
+                        <div class="location-info">
+                          <div class="location-name">London, UK</div>
+                          <div class="location-coords">
+                            51.5074° N, 0.1278° W
+                          </div>
+                        </div>
+                        <div class="location-actions">
+                          <button
+                            class="location-action-btn"
+                            title="View on Map"
+                          >
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="location-action-btn" title="Delete">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="add-location-section">
+                      <button class="add-location-btn" id="add-location-btn">
+                        <i class="fas fa-plus"></i> Add New Location
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Add Location Modal -->
+                <div
+                  id="add-location-modal"
+                  class="modal"
+                  style="display: none"
+                >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3>Add New Location</h3>
+                      <button class="modal-close" id="modal-close-btn">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label for="location-name-input">Location Name:</label>
+                        <input
+                          type="text"
+                          id="location-name-input"
+                          placeholder="Enter location name"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="location-address-input">Address:</label>
+                        <input
+                          type="text"
+                          id="location-address-input"
+                          placeholder="Enter full address"
+                        />
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label for="location-lat-input">Latitude:</label>
+                          <input
+                            type="number"
+                            id="location-lat-input"
+                            step="any"
+                            placeholder="e.g., 37.7749"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="location-lng-input">Longitude:</label>
+                          <input
+                            type="number"
+                            id="location-lng-input"
+                            step="any"
+                            placeholder="e.g., -122.4194"
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="location-description-input"
+                          >Description (optional):</label
+                        >
+                        <textarea
+                          id="location-description-input"
+                          placeholder="Add a description for this location"
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-secondary" id="modal-cancel-btn">
+                        Cancel
+                      </button>
+                      <button class="btn btn-primary" id="modal-save-btn">
+                        Save Location
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile-section" class="content-section">
+          <!-- Profile Header -->
+          <header class="x-header">
+            <div class="header-content">
+              <div class="profile-header-nav">
+                <button class="back-btn" id="profile-back-btn">
+                  <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="profile-header-info">
+                  <h1 id="profile-display-name">John Doe</h1>
+                  <span id="profile-post-count">1,234 posts</span>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- Profile Cover Photo -->
+          <div class="profile-cover">
+            <img
+              src="https://via.placeholder.com/600x200/1DA1F2/ffffff?text=Cover+Photo"
+              alt="Cover Photo"
+              id="profile-cover-photo"
+            />
+            <button class="edit-cover-btn" id="edit-cover-btn">
+              <i class="fas fa-camera"></i>
+            </button>
+          </div>
+
+          <!-- Profile Info Section -->
+          <div class="profile-info-section">
+            <div class="profile-avatar-container">
+              <img
+                src="https://via.placeholder.com/120/1DA1F2/ffffff?text=JD"
+                alt="Profile Picture"
+                id="profile-avatar"
+                class="profile-avatar-large"
+              />
+              <button class="edit-avatar-btn" id="edit-avatar-btn">
+                <i class="fas fa-camera"></i>
+              </button>
+            </div>
+
+            <div class="profile-actions">
+              <button class="edit-profile-btn" id="edit-profile-btn">
+                Edit profile
+              </button>
+            </div>
+
+            <div class="profile-details">
+              <h2 id="profile-name">John Doe</h2>
+              <p id="profile-username">@johndoe</p>
+              <p id="profile-bio">
+                Software Developer | Tech Enthusiast | Coffee Lover ☕ |
+                Building the future one line of code at a time 🚀
+              </p>
+
+              <div class="profile-meta">
+                <div class="profile-location">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span id="profile-location">San Francisco, CA</span>
+                </div>
+                <div class="profile-website">
+                  <i class="fas fa-link"></i>
+                  <a href="#" id="profile-website">johndoe.dev</a>
+                </div>
+                <div class="profile-join-date">
+                  <i class="fas fa-calendar"></i>
+                  <span id="profile-join-date">Joined March 2020</span>
+                </div>
+              </div>
+
+              <div class="profile-stats">
+                <div class="stat-item">
+                  <span class="stat-number" id="profile-following-count"
+                    >1,234</span
+                  >
+                  <span class="stat-label">Following</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number" id="profile-followers-count"
+                    >5,678</span
+                  >
+                  <span class="stat-label">Followers</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Tabs -->
+          <div class="profile-tabs">
+            <button class="profile-tab-btn active" data-tab="posts">
+              <span>Posts</span>
+            </button>
+            <button class="profile-tab-btn" data-tab="replies">
+              <span>Replies</span>
+            </button>
+            <button class="profile-tab-btn" data-tab="media">
+              <span>Media</span>
+            </button>
+            <button class="profile-tab-btn" data-tab="likes">
+              <span>Likes</span>
+            </button>
+          </div>
+
+          <!-- Profile Content -->
+          <div class="profile-content">
+            <!-- Posts Tab -->
+            <div id="profile-posts" class="profile-tab-content active">
+              <div class="posts-feed" id="profile-posts-container">
+                <!-- User's posts will be loaded here -->
+              </div>
+            </div>
+
+            <!-- Replies Tab -->
+            <div id="profile-replies" class="profile-tab-content">
+              <div class="empty-state">
+                <i class="fas fa-comment"></i>
+                <h3>No replies yet</h3>
+                <p>When you reply to someone, it will show up here.</p>
+              </div>
+            </div>
+
+            <!-- Media Tab -->
+            <div id="profile-media" class="profile-tab-content">
+              <div class="media-grid" id="profile-media-grid">
+                <!-- User's media will be loaded here -->
+              </div>
+            </div>
+
+            <!-- Likes Tab -->
+            <div id="profile-likes" class="profile-tab-content">
+              <div class="empty-state">
+                <i class="fas fa-heart"></i>
+                <h3>No likes yet</h3>
+                <p>Posts you like will show up here.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Right Sidebar -->
+      <aside class="x-sidebar right-sidebar">
+        <div class="sidebar-content">
+          <!-- Search Bar -->
+          <div class="search-container">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search" id="search-input" />
+            </div>
+          </div>
+
+          <!-- Trending Section -->
+          <div class="trending-section">
+            <h3>Trends for you</h3>
+            <div class="trending-item">
+              <div class="trending-category">Trending in Technology</div>
+              <div class="trending-tag">#JavaScript</div>
+              <div class="trending-count">50.5K posts</div>
+            </div>
+            <div class="trending-item">
+              <div class="trending-category">Trending in Science</div>
+              <div class="trending-tag">#AI</div>
+              <div class="trending-count">25.2K posts</div>
+            </div>
+            <div class="trending-item">
+              <div class="trending-category">Trending in Education</div>
+              <div class="trending-tag">#Coding</div>
+              <div class="trending-count">15.8K posts</div>
+            </div>
+          </div>
+
+          <!-- Who to follow -->
+          <div class="who-to-follow">
+            <h3>Who to follow</h3>
+            <div class="follow-suggestion">
+              <img
+                src="https://via.placeholder.com/40/28a745/ffffff?text=JS"
+                alt="Profile"
+                class="suggestion-avatar"
+              />
+              <div class="suggestion-info">
+                <div class="suggestion-name">Jane Smith</div>
+                <div class="suggestion-handle">@janesmith</div>
+              </div>
+              <button class="follow-btn">Follow</button>
+            </div>
+            <div class="follow-suggestion">
+              <img
+                src="https://via.placeholder.com/40/dc3545/ffffff?text=BW"
+                alt="Profile"
+                class="suggestion-avatar"
+              />
+              <div class="suggestion-info">
+                <div class="suggestion-name">Bob Wilson</div>
+                <div class="suggestion-handle">@bobwilson</div>
+              </div>
+              <button class="follow-btn">Follow</button>
+            </div>
+          </div>
+        </div>
+      </aside>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Google Maps API -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsMLVg6h1kvxjV8Pac3xhnXHSNz7DwKok&libraries=places&callback=initGoogleMaps"></script>
-    
+    <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsMLVg6h1kvxjV8Pac3xhnXHSNz7DwKok&libraries=places&callback=initGoogleMaps"
+    ></script>
+
     <!-- Custom JavaScript -->
     <script src="Feed.js"></script>
-</body>
+  </body>
 </html>

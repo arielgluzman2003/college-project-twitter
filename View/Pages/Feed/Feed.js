@@ -2193,3 +2193,58 @@ window.initGoogleMaps = function() {
     // The map will be initialized when the maps tab is clicked
 };
 
+const logOut = () => {
+  document.cookie = "sessionId=; Max-Age=0; path=/; SameSite=None; Secure";
+  window.location.href = "../Login/Login.html";
+};
+
+// Add location to the textarea
+const getLocation = () => {
+    const postContent = document.getElementById("post-content");
+  
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          const locationText = `Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+          postContent.value += `\n${locationText}`; // Append location to textarea
+          console.log(`Added location: ${locationText}`);
+        },
+        (error) => {
+          console.error(`Error getting location: ${error.message}`);
+          window.alert(`Error getting location: ${error.message}`);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+      window.alert("Geolocation is not supported by this browser.");
+    }
+  };
+  
+  const mediaInput = document.getElementById("media-input");
+  const imagePreview = document.getElementById("image-preview");
+  const mediaBtn = document.getElementById("media-btn");
+  
+  // Open file picker when the media button is clicked
+  mediaBtn.addEventListener("click", () => {
+      mediaInput.click();
+  });
+  
+  // Display the selected image in the preview
+  mediaInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+  
+      if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+              imagePreview.src = e.target.result; // Set the image source to the file data
+              imagePreview.style.display = "block"; // Show the image preview
+          };
+          reader.readAsDataURL(file); // Read the file as a data URL
+      } else {
+          imagePreview.style.display = "none"; // Hide the preview if no image is selected
+          imagePreview.src = ""; // Clear the image source
+      }
+  });
+
